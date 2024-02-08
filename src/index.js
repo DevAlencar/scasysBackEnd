@@ -8,6 +8,7 @@ require("./config/dbConfig");
 app.use(cors());
 app.use(express.json());
 app.use("/user", userRoutes);
+//FIXME:
 app.use("/exp", expRoutes);
 
 app.listen(3333);

@@ -8,3 +8,7 @@ const UserDataSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("users", UserDataSchema);
+
+/*TODO:
+    falar com guilherme para modelar os experimentos
+*/
