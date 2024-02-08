@@ -1,9 +1,9 @@
 const express = require("express");
 const routes = express.Router();
 
-const AnnotationController = require("./controllers/AnnotationController");
-const PriorityController = require("./controllers/PriorityController");
-const ContentController = require("./controllers/ContentController");
+const AnnotationController = require("../src/controllers/AnnotationController");
+const PriorityController = require("../src/controllers/PriorityController");
+const ContentController = require("../src/controllers/ContentController");
 
 //annotations
 routes.get("/annotations", AnnotationController.read);
