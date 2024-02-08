@@ -1,72 +1,132 @@
-const Users = require("../models/UserData");
+const User = require("../models/UserData");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv/config");
 
 module.exports = {
     async register(req, res) {
-        switch (registerV(await req.body, Users)) {
-            case 1:
-                return res.status(422).json("msg: É necessário um nome");
-            case 2:
-                return res.status(422).json("msg: É necessário um email");
-            case 3:
-                return res.status(422).json("msg: É necessário uma senha");
-            case 4:
-                return res
-                    .status(422)
-                    .json("msg: É necessário senha de confirmação");
-            case 5:
-                return res.status(422).json("msg: as senhas não coencidem");
-            case 6:
-                return res
-                    .status(422)
-                    .json("msg: É necessário uma instituição");
-            case 7:
-                return res
-                    .status(422)
-                    .json("msg: Já existe um usuário com este email");
-            case 8:
-                return res.status(201).json("msg: Usuário criado com sucesso");
-            default:
-                return res.status(500).json("msg: serverError");
+        const { name, email, password, confirmPassword, institution } =
+            req.body;
+
+        //validations
+
+        //verificando existencia dos dados
+        if (!name) {
+            return res.status(422).json("msg: É necessário um nome");
+        }
+        if (!email) {
+            return res.status(422).json("msg: É necessário um email");
+        }
+        if (!password) {
+            return res.status(422).json("msg: É necessário uma senha");
+        }
+        if (!confirmPassword) {
+            return res
+                .status(422)
+                .json("msg: É necessário uma senha de confirmaçao");
+        }
+        if (password !== confirmPassword) {
+            return res
+                .status(422)
+                .json("msg: a senha de confirmação está diferente");
+        }
+        if (!institution) {
+            return res.status(422).json("msg: É necessário uma instituição");
+        }
+
+        //verificando existencia do usuario
+        const userExists = await User.findOne({ email: email });
+
+        if (userExists) {
+            return res.status(422).json("msg: O usuário já existe");
+        }
+
+        //criptografando password
+        const salt = await bcrypt.genSalt(15);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        //criando usuário
+        const user = new User({
+            name,
+            email,
+            password: passwordHash,
+            institution,
+        });
+
+        try {
+            await user.save();
+            return res.status(201).json("msg: Usuário criado com sucesso");
+        } catch (error) {
+            return res.status(500).json("msg: serverError");
         }
     },
 
-    async read(request, response) {
-        const UserList = await Users.find();
+    async login(req, res) {
+        const { email, password } = req.body;
 
-        return response.json(UserList);
+        //validations
+
+        //verificando existencia dos dados
+        if (!email) {
+            return res.status(422).json("msg: É necessário um email");
+        }
+        if (!password) {
+            return res.status(422).json("msg: É necessário uma senha");
+        }
+
+        //verificando se usuario existe
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado" });
+        }
+
+        //validando senha
+        const userPasswordCheck = await bcrypt.compare(password, user.password);
+        if (!userPasswordCheck) {
+            return res.status(422).json({ msg: "Senha inválida" });
+        }
+
+        //login do usuario com token
+        try {
+            const secret = process.env.SECRET;
+            const token = jwt.sign(
+                {
+                    id: user._id,
+                },
+                secret
+            );
+
+            res.status(200).json({ msg: "Login realizado com sucesso", token });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
     },
 
-    /*async create(request, response) {
-    const { title, notes, priority } = request.body;
+    async verifyToken(req, res) {
+        const id = await req.params.id;
 
-    if (!notes || !title) {
-      return response.status(400).json({
-        error: "Necessário um título/anotação",
-      });
-    }
+        const user = await User.findById(id, "-password");
 
-    const annotationCreated = await Annotations.create({
-      title,
-      notes,
-      priority,
-    });
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado" });
+        }
 
-    return response.json(annotationCreated);
-  },
+        const authHeader = req.headers["authorization"];
+        const token = authHeader;
 
-  async delete(request, response) {
-    const { id } = request.params;
+        if (!token) {
+            return res.status(401).json({ msg: "Acesso negado" });
+        }
 
-    const annotationDeleted = await Annotations.findOneAndDelete({
-      _id: id,
-    });
+        try {
+            const secret = process.env.SECRET;
 
-    if (annotationDeleted) {
-      return response.json(annotationDeleted);
-    } else {
-      return response.status(401).json({
-        error: "Não foi encontrado o registro",
-      });
+            jwt.verify(token, secret);
+            return res.status(200).json({ user });
+
+            next();
+        } catch (error) {
+            return res.status(400).json({ msg: "token inválido" });
+        }
     },
-}*/
 };

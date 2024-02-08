@@ -3,7 +3,9 @@ const routes = express.Router();
 
 const UserController = require("../src/controllers/UserController");
 
-routes.post("/user/auth/register", UserController.register);
-routes.get("/user/auth/", UserController.read);
+routes.post("/register", UserController.register);
+routes.get("/login", UserController.login);
+
+routes.get("/:id", UserController.verifyToken);
 
 module.exports = routes;
