@@ -96,9 +96,21 @@ module.exports = {
                 secret
             );
 
-            user.token = token;
             await user.save();
-            res.status(200).json({ msg: "Login realizado com sucesso" });
+            res.status(200).json({ msg: "Login realizado com sucesso", token });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async delete(req, res) {
+        const id = req.params.id;
+
+        try {
+            await User.findOndeByIdAndDelete({ _id: id });
+            return res
+                .status(200)
+                .json({ msg: "Usuário deletado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
