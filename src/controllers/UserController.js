@@ -105,9 +105,8 @@ module.exports = {
 
     async delete(req, res) {
         const id = req.params.id;
-
         try {
-            await User.findOndeByIdAndDelete({ _id: id });
+            await User.findByIdAndDelete({ _id: id });
             return res
                 .status(200)
                 .json({ msg: "Usuário deletado com sucesso" });
