@@ -104,15 +104,15 @@ module.exports = {
     },
 
     async delete(req, res) {
-        const id = req.params.id;
-        const user = await User.findByIdAndDelete({ _id: id });
-
-        //validando se o usuário foi encontrado
-        if (!user) {
-            return res.status(404).json({ msg: "Usuário não encontrado" });
-        }
-
         try {
+            const id = req.params.id;
+            const user = await User.findByIdAndDelete({ _id: id });
+
+            //validando se o usuário foi encontrado
+            if (!user) {
+                return res.status(404).json({ msg: "Usuário não encontrado" });
+            }
+
             return res
                 .status(200)
                 .json({ msg: "Usuário deletado com sucesso" });
