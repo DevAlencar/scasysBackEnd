@@ -45,6 +45,9 @@ module.exports = {
         const salt = await bcrypt.genSalt(15);
         const passwordHash = await bcrypt.hash(password, salt);
 
+        //checando email
+        //TODO: adicionar validação por email
+
         //criando usuário
         const user = new User({
             name,
