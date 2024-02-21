@@ -11,7 +11,6 @@ const middleware = require("../middleware/checkToken");
 app.use(cors());
 app.use(express.json());
 app.use("/user", userRoutes);
-//TODO: verificar necessidade do id nessa parte
-app.use("/exp/:id", middleware.checkToken, expRoutes);
+app.use("/exp", middleware.checkToken, expRoutes);
 
 app.listen(3333);

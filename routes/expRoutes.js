@@ -5,5 +5,6 @@ require("dotenv/config");
 const ExpController = require("../src/controllers/ExpController");
 
 routes.get("/1", ExpController.read);
+routes.post("/2/:id", ExpController.new_procedure);
 
 module.exports = routes;

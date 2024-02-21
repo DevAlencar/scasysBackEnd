@@ -100,7 +100,9 @@ module.exports = {
             );
 
             await user.save();
-            res.status(200).json({ msg: "Login realizado com sucesso", token });
+            return res
+                .status(200)
+                .json({ msg: "Login realizado com sucesso", token });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
