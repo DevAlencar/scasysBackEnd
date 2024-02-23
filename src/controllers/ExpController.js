@@ -2,7 +2,7 @@ const Exp = require("../models/ExpData");
 const User = require("../models/UserData");
 
 module.exports = {
-    async read(req, res) {
+    async test(req, res) {
         return res.status(200).json({ msg: "deu certo" });
     },
 
