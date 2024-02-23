@@ -11,41 +11,45 @@ const ExpDataSchema = new mongoose.Schema(
         modo_de_calculo: {
             type: String,
         },
-        inventory_stage: {
-            type: Array,
-            properties: {
-                stage: {
-                    type: String,
-                },
-                name: {
-                    type: String,
-                },
-                num_of_reps: {
-                    type: Number,
-                },
-                especifity: {
-                    type: String,
-                },
-                item: {
-                    type: String,
-                },
-                chem_form: {
-                    type: String,
-                },
-                quantity: {
-                    type: Array,
-                    value: {
+        inventory_stage: [
+            {
+                type: Array,
+                properties: {
+                    stage: {
+                        type: String,
+                    },
+                    name: {
+                        type: String,
+                    },
+                    num_of_reps: {
+                        type: Number,
+                    },
+                    especifity: {
+                        type: String,
+                    },
+                    item: {
+                        type: String,
+                    },
+                    chem_form: {
+                        type: String,
+                    },
+                    quantity: [
+                        {
+                            type: Array,
+                            value: {
+                                type: String,
+                            },
+                        },
+                    ],
+                    unit: {
+                        type: String,
+                    },
+                    observation: {
                         type: String,
                     },
                 },
-                unit: {
-                    type: String,
-                },
-                observation: {
-                    type: String,
-                },
             },
-        },
+        ],
         ppgr_stage: {
             mmr: {
                 type: String,

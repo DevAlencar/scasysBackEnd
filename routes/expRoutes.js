@@ -4,7 +4,8 @@ require("dotenv/config");
 
 const ExpController = require("../src/controllers/ExpController");
 
-routes.get("/1", ExpController.test);
-routes.post("/2/:id", ExpController.new_procedure);
+routes.get("/test", ExpController.test);
+routes.post("/newExp/:id", ExpController.new_procedure);
+routes.post("/invetoryStage/:id", ExpController.add_inventory_stage);
 
 module.exports = routes;
