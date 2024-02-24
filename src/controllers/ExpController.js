@@ -10,15 +10,6 @@ module.exports = {
     async new_procedure(req, res) {
         const { name, calc } = req.body;
 
-        //name validation
-        if (!name) {
-            return res.status(422).json("msg: É necessário um nome");
-        }
-        //calc validation
-        if (!calc) {
-            return res.status(422).json("msg: É necessário um modo de calculo");
-        }
-
         //User  search
         const id = req.params.id;
         const user = await User.findById({ _id: id });
@@ -30,8 +21,6 @@ module.exports = {
             modo_de_calculo: calc,
         });
 
-        console.log(exp);
-
         //experiment save
         try {
             await exp.save();
@@ -39,7 +28,7 @@ module.exports = {
                 .status(201)
                 .json({ msg: "Experimento criado com sucesso" });
         } catch (err) {
-            return res.status(500).json({ msg: "serverError" });
+            return res.status(500).json(err.message);
         }
     },
 
@@ -152,7 +141,7 @@ module.exports = {
         //TODO: adicionar métodos de calculo
 
         //find experiment and update
-        const exp = Exp.findByIdAndUpdate(
+        const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
                 ppgr_stage,
@@ -211,7 +200,7 @@ module.exports = {
         //TODO: adicionar métodos de calculo
 
         //find experiment and update
-        const exp = Exp.findByIdAndUpdate(
+        const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
                 security_stage_one,
@@ -255,7 +244,7 @@ module.exports = {
         //TODO:adicionar os calculos
 
         //find experiment and update
-        const exp = Exp.findByIdAndUpdate(
+        const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
                 cm_stage,
@@ -286,7 +275,7 @@ module.exports = {
         //TODO:adicionar os calculos
 
         //find experiment and update
-        const exp = Exp.findByIdAndUpdate(
+        const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
                 security_stage_two,
@@ -317,7 +306,7 @@ module.exports = {
         //TODO:adicionar os calculos
 
         //find experiment and update
-        const exp = Exp.findByIdAndUpdate(
+        const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
                 ce_stage,
@@ -348,7 +337,7 @@ module.exports = {
         //TODO:adicionar os calculos
 
         //find experiment and update
-        const exp = Exp.findByIdAndUpdate(
+        const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
                 energy_stage,
@@ -379,7 +368,7 @@ module.exports = {
         //TODO:adicionar os calculos
 
         //find experiment and update
-        const exp = Exp.findByIdAndUpdate(
+        const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
                 global_warm,

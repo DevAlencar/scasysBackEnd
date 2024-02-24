@@ -7,52 +7,50 @@ const ExpDataSchema = new mongoose.Schema(
         },
         name_of_experiment: {
             type: String,
+            required: [true, "É necessário um nome"],
         },
         modo_de_calculo: {
             type: String,
+            required: [true, "É necessário um modo de calculo"],
         },
-        inventory_stage: [
-            {
-                type: Array,
-                properties: {
-                    stage: {
-                        type: String,
-                    },
-                    name: {
-                        type: String,
-                    },
-                    num_of_reps: {
-                        type: Number,
-                    },
-                    especifity: {
-                        type: String,
-                    },
-                    item: {
-                        type: String,
-                    },
-                    chem_form: {
-                        type: String,
-                    },
-                    quantity: [
-                        {
-                            type: Array,
-                            value: {
-                                type: String,
-                            },
+        inventory_stage: {
+            properties: {
+                stage: {
+                    type: String,
+                },
+                name: {
+                    type: String,
+                },
+                num_of_reps: {
+                    type: Number,
+                },
+                especifity: {
+                    type: String,
+                },
+                item: {
+                    type: String,
+                },
+                chem_form: {
+                    type: String,
+                },
+                quantity: [
+                    {
+                        type: Array,
+                        value: {
+                            type: String,
                         },
-                    ],
-                    unit: {
-                        type: String,
                     },
-                    observation: {
-                        type: String,
-                    },
+                ],
+                unit: {
+                    type: String,
+                },
+                observation: {
+                    type: String,
                 },
             },
-        ],
+        },
         ppgr_stage: [
             {
-                type: Array,
                 mmr: {
                     type: String,
                 },
@@ -73,450 +71,530 @@ const ExpDataSchema = new mongoose.Schema(
                 },
             },
         ],
-        security_stage_one: {
-            exposition: {
-                type: Object,
-                quim_comp: {
-                    type: String,
-                },
-                conc_tox_lim: {
+        security_stage_one: [
+            {
+                exposition: {
                     type: Object,
-                    value: {
+                    quim_comp: {
                         type: String,
                     },
-                    unit: {
-                        type: String,
+                    conc_tox_lim: {
+                        type: Object,
+                        value: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
                     },
-                },
-                exp_time: {
-                    type: Object,
-                    value: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                src: {
-                    type: String,
-                },
-            },
-            acumulation: {
-                type: Object,
-                quim_comp: {
-                    type: String,
-                },
-                fa: {
-                    type: Object,
-                    value: {
-                        type: String,
-                    },
-                    unit_esp: {
-                        type: String,
-                    },
-                    unit_met: {
-                        type: String,
-                    },
-                },
-                src: {
-                    type: String,
-                },
-            },
-        },
-        cm_stage: {
-            type: Object,
-            quim_comp: {
-                type: String,
-            },
-            cancer: {
-                type: Boolean,
-            },
-            src: {
-                type: String,
-            },
-        },
-        security_stage_two: {
-            exp_pot: {
-                type: Object,
-                quim_comp: {
-                    type: String,
-                },
-                fe: {
-                    type: Object,
-                    value: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                src: {
-                    type: String,
-                },
-            },
-            rgc: {
-                quim_comp: {
-                    type: String,
-                },
-                quantity: {
-                    type: Object,
-                    value: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                gas_pressure: {
-                    type: Object,
-                    value: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                atm_pressure: {
-                    type: Object,
-                    value: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                gas_state: {
-                    type: String,
-                },
-                amb_temp: {
-                    type: Number,
-                },
-                comp_tem: {
-                    type: Number,
-                },
-            },
-            fri: {
-                type: Object,
-                quim_comp: {
-                    type: String,
-                },
-                inc_risc: {
-                    type: Boolean,
-                },
-                epa: {
-                    type: Object,
-                    entalpia: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
+                    exp_time: {
+                        type: Object,
+                        value: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
                     },
                     src: {
                         type: String,
                     },
                 },
-                lie: {
+                acumulation: {
                     type: Object,
-                    limit: {
+                    quim_comp: {
                         type: String,
                     },
-                    src: {
-                        type: String,
-                    },
-                },
-                fu_point: {
-                    type: Object,
-                    fulgor: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
+                    fa: {
+                        type: Object,
+                        value: {
+                            type: String,
+                        },
+                        unit_esp: {
+                            type: String,
+                        },
+                        unit_met: {
+                            type: String,
+                        },
                     },
                     src: {
                         type: String,
                     },
                 },
             },
-            fg_factor: {
+        ],
+        cm_stage: [
+            {
                 type: Object,
                 quim_comp: {
                     type: String,
                 },
-                quantity: {
-                    type: String,
-                },
-                unity: {
-                    type: String,
-                },
-                vgf: {
-                    type: Object,
-                    qtt: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                atm_pressure: {
-                    type: Object,
-                    qtt: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                src: {
-                    type: String,
-                },
-            },
-            corros_factor_one: {
-                type: Object,
-                quim_comp: {
-                    type: String,
-                },
-                corros_tax: {
-                    type: Object,
-                    qtt: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                temperature: {
-                    type: Object,
-                    qtt: {
-                        type: String,
-                    },
-                    unit: {
-                        type: String,
-                    },
-                },
-                aacaa: {
+                cancer: {
                     type: Boolean,
                 },
                 src: {
                     type: String,
                 },
             },
-            corros_factor_two: {
+        ],
+        security_stage_two: [
+            {
+                exp_pot: [
+                    {
+                        type: Object,
+                        quim_comp: {
+                            type: String,
+                        },
+                        fe: [
+                            {
+                                type: Object,
+                                value: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        src: {
+                            type: String,
+                        },
+                    },
+                ],
+                rgc: [
+                    {
+                        quim_comp: {
+                            type: String,
+                        },
+                        quantity: [
+                            {
+                                type: Object,
+                                value: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        gas_pressure: [
+                            {
+                                type: Object,
+                                value: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        atm_pressure: [
+                            {
+                                type: Object,
+                                value: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        gas_state: {
+                            type: String,
+                        },
+                        amb_temp: {
+                            type: Number,
+                        },
+                        comp_tem: {
+                            type: Number,
+                        },
+                    },
+                ],
+                fri: [
+                    {
+                        type: Object,
+                        quim_comp: {
+                            type: String,
+                        },
+                        inc_risc: {
+                            type: Boolean,
+                        },
+                        epa: [
+                            {
+                                type: Object,
+                                entalpia: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                                src: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        lie: [
+                            {
+                                type: Object,
+                                limit: {
+                                    type: String,
+                                },
+                                src: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        fu_point: [
+                            {
+                                type: Object,
+                                fulgor: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                                src: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                    },
+                ],
+                fg_factor: [
+                    {
+                        type: Object,
+                        quim_comp: {
+                            type: String,
+                        },
+                        quantity: {
+                            type: String,
+                        },
+                        unity: {
+                            type: String,
+                        },
+                        vgf: [
+                            {
+                                type: Object,
+                                qtt: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        atm_pressure: [
+                            {
+                                type: Object,
+                                qtt: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        src: {
+                            type: String,
+                        },
+                    },
+                ],
+                corros_factor: [
+                    {
+                        type: Object,
+                        quim_comp: {
+                            type: String,
+                        },
+                        corros_tax: [
+                            {
+                                type: Object,
+                                qtt: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        temperature: [
+                            {
+                                type: Object,
+                                qtt: {
+                                    type: String,
+                                },
+                                unit: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        aacaa: {
+                            type: Boolean,
+                        },
+                        src: {
+                            type: String,
+                        },
+                    },
+                ],
+                security_items: [
+                    {
+                        type: Object,
+                        quim_comp: {
+                            type: String,
+                        },
+                        number_of_security: {
+                            type: Number,
+                        },
+                    },
+                ],
+            },
+        ],
+        ce_stage: [
+            {
+                type: Object,
+                cata_ocorren: {
+                    type: Boolean,
+                },
+                dur_time_wo_cata: [
+                    {
+                        type: Object,
+                        time: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
+                    },
+                ],
+                src: {
+                    type: String,
+                },
+            },
+        ],
+        energy_stage: [
+            {
+                type: Object,
+                cmd: [
+                    {
+                        type: Object,
+                        quantity: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
+                    },
+                ],
+                process_dur: [
+                    {
+                        type: Object,
+                        quantity: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
+                    },
+                ],
+                src: {
+                    type: String,
+                },
+            },
+        ],
+        global_warm: [
+            {
                 type: Object,
                 quim_comp: {
                     type: String,
                 },
-                number_of_security: {
-                    type: Number,
-                },
-            },
-        },
-        ce_stage: {
-            type: Object,
-            cata_ocorren: {
-                type: Boolean,
-            },
-            dur_time_wo_cata: {
-                type: Object,
-                time: {
-                    type: String,
-                },
-                unit: {
-                    type: String,
-                },
-            },
-            src: {
-                type: String,
-            },
-        },
-        energy_stage: {
-            type: Object,
-            cmd: {
-                type: Object,
-                quantity: {
-                    type: String,
-                },
-                unit: {
-                    type: String,
-                },
-            },
-            process_dur: {
-                type: Object,
-                quantity: {
-                    type: String,
-                },
-                unit: {
-                    type: String,
-                },
-            },
-            src: {
-                type: String,
-            },
-        },
-        global_warm: {
-            type: Object,
-            quim_comp: {
-                type: String,
-            },
-            co2_mass: {
-                type: String,
-            },
-            src: {
-                type: String,
-            },
-        },
-        oz_dan: {
-            type: Object,
-            quim_comp: {
-                type: String,
-            },
-            cfc_mass: {
-                type: String,
-            },
-            src: {
-                type: String,
-            },
-        },
-        pot_foto: {
-            type: Object,
-            quim_comp: {
-                type: String,
-            },
-            oz_mass: {
-                type: String,
-            },
-            src: {
-                type: String,
-            },
-        },
-        pot_ac: {
-            type: Object,
-            quim_comp: {
-                type: String,
-            },
-            ac_mols: {
-                type: String,
-            },
-            src: {
-                type: String,
-            },
-        },
-        water_cons: {
-            type: Object,
-            total_vol: {
-                type: Object,
-                qtt: {
-                    type: String,
-                },
-                unit: {
-                    type: String,
-                },
-            },
-            amb_temperature: {
-                type: Object,
-                qtt: {
-                    type: String,
-                },
-                unit: {
-                    type: String,
-                },
-            },
-            water_temperature: {
-                type: Object,
-                qtt: {
-                    type: String,
-                },
-                unit: {
-                    type: String,
-                },
-            },
-            water_garb_temperature: {
-                type: Object,
-                qtt: {
-                    type: String,
-                },
-                unit: {
-                    type: String,
-                },
-            },
-        },
-        rad_ion: {
-            type: Object,
-            quim_comp: {
-                type: String,
-            },
-            radio: {
-                type: String,
-            },
-            amb_radio: {
-                type: Object,
-                value: {
+                co2_mass: {
                     type: String,
                 },
                 src: {
                     type: String,
                 },
             },
-        },
-        rad_ion: {
-            type: Object,
-            quim_comp: {
-                type: String,
-            },
-            mtcd: {
+        ],
+        oz_dan: [
+            {
                 type: Object,
-                value: {
+                quim_comp: {
+                    type: String,
+                },
+                cfc_mass: {
                     type: String,
                 },
                 src: {
                     type: String,
                 },
             },
-            menup: {
-                type: String,
+        ],
+        pot_foto: [
+            {
+                type: Object,
+                quim_comp: {
+                    type: String,
+                },
+                oz_mass: {
+                    type: String,
+                },
+                src: {
+                    type: String,
+                },
             },
-        },
-        hol_amb: {
-            type: Object,
-            value: {
-                type: String,
+        ],
+        pot_ac: [
+            {
+                type: Object,
+                quim_comp: {
+                    type: String,
+                },
+                ac_mols: {
+                    type: String,
+                },
+                src: {
+                    type: String,
+                },
             },
-            unit: {
-                type: String,
+        ],
+        water_cons: [
+            {
+                type: Object,
+                total_vol: [
+                    {
+                        type: Object,
+                        qtt: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
+                    },
+                ],
+                amb_temperature: [
+                    {
+                        type: Object,
+                        qtt: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
+                    },
+                ],
+                water_temperature: [
+                    {
+                        type: Object,
+                        qtt: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
+                    },
+                ],
+                water_garb_temperature: [
+                    {
+                        type: Object,
+                        qtt: {
+                            type: String,
+                        },
+                        unit: {
+                            type: String,
+                        },
+                    },
+                ],
             },
-        },
-        results: {
-            type: Object,
-            1: {
-                type: String,
+        ],
+        rad_ion: [
+            {
+                type: Object,
+                quim_comp: {
+                    type: String,
+                },
+                radio: {
+                    type: String,
+                },
+                amb_radio: [
+                    {
+                        type: Object,
+                        value: {
+                            type: String,
+                        },
+                        src: {
+                            type: String,
+                        },
+                    },
+                ],
             },
-            2: {
-                type: String,
+        ],
+        resor_cosum: [
+            {
+                type: Object,
+                quim_comp: {
+                    type: String,
+                },
+                mtcd: [
+                    {
+                        type: Object,
+                        value: {
+                            type: String,
+                        },
+                        src: {
+                            type: String,
+                        },
+                    },
+                ],
+                menup: {
+                    type: String,
+                },
             },
-            3: {
-                type: String,
+        ],
+        hol_amb: [
+            {
+                type: Object,
+                value: {
+                    type: String,
+                },
+                unit: {
+                    type: String,
+                },
             },
-            4: {
-                type: String,
+        ],
+        results: [
+            {
+                type: Object,
+                1: {
+                    type: String,
+                },
+                2: {
+                    type: String,
+                },
+                3: {
+                    type: String,
+                },
+                4: {
+                    type: String,
+                },
+                5: {
+                    type: String,
+                },
+                6: {
+                    type: String,
+                },
+                7: {
+                    type: String,
+                },
+                8: {
+                    type: String,
+                },
+                9: {
+                    type: String,
+                },
+                10: {
+                    type: String,
+                },
             },
-            5: {
-                type: String,
-            },
-            6: {
-                type: String,
-            },
-            7: {
-                type: String,
-            },
-            8: {
-                type: String,
-            },
-            9: {
-                type: String,
-            },
-            10: {
-                type: String,
-            },
-        },
+        ],
     },
     { timestamps: true }
 );
