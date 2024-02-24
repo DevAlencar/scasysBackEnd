@@ -516,4 +516,8 @@ module.exports = {
             return res.status(500).json({ msg: "serverError" });
         }
     },
+
+    async add_results(req, res) {
+        //TODO:realizar calculos e salvar valores em results
+    },
 };

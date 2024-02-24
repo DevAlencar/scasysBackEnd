@@ -18,5 +18,6 @@ routes.post("/waterCons/:id", ExpController.add_water_cons);
 routes.post("/radIonStage/:id", ExpController.add_rad_ion_stage);
 routes.post("/resorCosumStage/:id", ExpController.add_resor_cosum_stage);
 routes.post("/holAmbStage/:id", ExpController.add_hol_amb_stage);
+routes.post("/results/:id", ExpController.add_results);
 
 module.exports = routes;
