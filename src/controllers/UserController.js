@@ -11,15 +11,6 @@ module.exports = {
         //validations
 
         //verificando existencia dos dados
-        if (!name) {
-            return res.status(422).json("msg: É necessário um nome");
-        }
-        if (!email) {
-            return res.status(422).json("msg: É necessário um email");
-        }
-        if (!password) {
-            return res.status(422).json("msg: É necessário uma senha");
-        }
         if (!confirmPassword) {
             return res
                 .status(422)
@@ -29,9 +20,6 @@ module.exports = {
             return res
                 .status(422)
                 .json("msg: a senha de confirmação está diferente");
-        }
-        if (!institution) {
-            return res.status(422).json("msg: É necessário uma instituição");
         }
 
         //verificando existencia do usuario
@@ -60,7 +48,7 @@ module.exports = {
             await user.save();
             return res.status(201).json("msg: Usuário criado com sucesso");
         } catch (error) {
-            return res.status(500).json("msg: serverError");
+            return res.status(500).json(error.message);
         }
     },
 

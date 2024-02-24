@@ -30,11 +30,13 @@ module.exports = {
             modo_de_calculo: calc,
         });
 
+        console.log(exp);
+
         //experiment save
         try {
             await exp.save();
             return res
-                .status(200)
+                .status(201)
                 .json({ msg: "Experimento criado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
@@ -165,7 +167,7 @@ module.exports = {
         try {
             exp.save;
             return res
-                .status(500)
+                .status(201)
                 .json({ msg: "Fase de ppgr adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
@@ -270,6 +272,133 @@ module.exports = {
             return res
                 .status(500)
                 .json({ msg: "Fase CM adicionado com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async add_security_stage_two(req, res) {
+        const { security_stage_two } = req.body;
+        const id = req.params.id;
+
+        //TODO:validations
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                security_stage_two,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fase CM adicionado com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async add_ce_stage(req, res) {
+        const { ce_stage } = req.body;
+        const id = req.params.id;
+
+        //TODO:validations
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                ce_stage,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fase CE adicionado com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async add_energy_stage(req, res) {
+        const { energy_stage } = req.body;
+        const id = req.params.id;
+
+        //TODO:validations
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                energy_stage,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fase Energia adicionado com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async add_amb_stages(req, res) {
+        const { global_warm, oz_dan, pot_foto, pot_ac } = req.body;
+        const id = req.params.id;
+
+        //TODO:validations
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                global_warm,
+                oz_dan,
+                pot_foto,
+                pot_ac,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fases Ambientais adicionadas com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }

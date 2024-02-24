@@ -50,26 +50,29 @@ const ExpDataSchema = new mongoose.Schema(
                 },
             },
         ],
-        ppgr_stage: {
-            mmr: {
-                type: String,
+        ppgr_stage: [
+            {
+                type: Array,
+                mmr: {
+                    type: String,
+                },
+                mtdr: {
+                    type: String,
+                },
+                mtad: {
+                    type: String,
+                },
+                td: {
+                    type: String,
+                },
+                f: {
+                    type: String,
+                },
+                src: {
+                    type: String,
+                },
             },
-            mtdr: {
-                type: String,
-            },
-            mtad: {
-                type: String,
-            },
-            td: {
-                type: String,
-            },
-            f: {
-                type: String,
-            },
-            src: {
-                type: String,
-            },
-        },
+        ],
         security_stage_one: {
             exposition: {
                 type: Object,
@@ -267,7 +270,7 @@ const ExpDataSchema = new mongoose.Schema(
                     type: String,
                 },
             },
-            corros_factor: {
+            corros_factor_one: {
                 type: Object,
                 quim_comp: {
                     type: String,
@@ -297,7 +300,7 @@ const ExpDataSchema = new mongoose.Schema(
                     type: String,
                 },
             },
-            corros_factor: {
+            corros_factor_two: {
                 type: Object,
                 quim_comp: {
                     type: String,
