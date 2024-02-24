@@ -14,9 +14,9 @@ module.exports = {
         if (!name) {
             return res.status(422).json("msg: É necessário um nome");
         }
-        /*if (!email) {
+        if (!email) {
             return res.status(422).json("msg: É necessário um email");
-        }*/
+        }
         if (!password) {
             return res.status(422).json("msg: É necessário uma senha");
         }

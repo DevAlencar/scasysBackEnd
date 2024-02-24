@@ -230,4 +230,48 @@ module.exports = {
             return res.status(500).json({ msg: "serverError" });
         }
     },
+
+    async add_cm_stage(req, res) {
+        const { cm_stage } = req.body;
+        const id = req.params.id;
+
+        //validations
+        if (!cm_stage.quim_comp) {
+            return res
+                .status(422)
+                .json({ msg: "É necessário um componente químico" });
+        }
+        if (!cm_stage.cancer) {
+            return res
+                .status(422)
+                .json({ msg: "É necessário o valor de cancer" });
+        }
+        if (!cm_stage.src) {
+            return res.status(422).json({ msg: "É necessário uma fonte" });
+        }
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                cm_stage,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fase CM adicionado com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
 };
