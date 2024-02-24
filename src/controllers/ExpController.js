@@ -392,4 +392,128 @@ module.exports = {
             return res.status(500).json({ msg: "serverError" });
         }
     },
+
+    async add_water_cons(req, res) {
+        const { water_cons } = req.body;
+        const id = req.params.id;
+
+        //TODO:validations
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = await Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                water_cons,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fase Agua adicionado com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async add_rad_ion_stage(req, res) {
+        const { rad_ion } = req.body;
+        const id = req.params.id;
+
+        //TODO:validations
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = await Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                rad_ion,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fase Radio adicionada com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async add_resor_cosum_stage(req, res) {
+        const { resor_cosum } = req.body;
+        const id = req.params.id;
+
+        //TODO:validations
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = await Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                resor_cosum,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fase resor_cosum adicionado com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async add_hol_amb_stage(req, res) {
+        const { hol_amb } = req.body;
+        const id = req.params.id;
+
+        //TODO:validations
+
+        //TODO:adicionar os calculos
+
+        //find experiment and update
+        const exp = await Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                hol_amb,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            exp.save;
+            return res
+                .status(500)
+                .json({ msg: "Fase hol_amb adicionado com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
 };
