@@ -17,6 +17,7 @@ module.exports = {
         //create experiment
         const exp = new Exp({
             autor: user.name,
+            autor_id: id,
             name_of_experiment: name,
             modo_de_calculo: calc,
         });
@@ -29,6 +30,36 @@ module.exports = {
                 .json({ msg: "Experimento criado com sucesso" });
         } catch (err) {
             return res.status(500).json(err.message);
+        }
+    },
+
+    async delete_procedure(req, res) {
+        const expId = req.params.expId;
+        const userId = req.params.userId;
+
+        const [exp, user] = await Promise.all([
+            Exp.findById({ _id: expId }),
+            User.findById({ _id: userId }),
+        ]);
+
+        if (!user) {
+            return res.status(404).json({ msg: "Usuário não encontrado" });
+        }
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        try {
+            if (user.id === exp.autor_id) {
+                await Exp.deleteOne({ _id: expId });
+            }
+            return res
+                .status(201)
+                .json({ msg: "Experimento deletado com sucesso" });
+        } catch (err) {
+            return res
+                .status(500)
+                .json({ msg: "serverError: experimento não deletado" });
         }
     },
 
@@ -291,7 +322,7 @@ module.exports = {
             exp.save;
             return res
                 .status(500)
-                .json({ msg: "Fase CM adicionado com sucesso" });
+                .json({ msg: "Fase de Segurança 2 adicionada com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -518,6 +549,12 @@ module.exports = {
     },
 
     async add_results(req, res) {
-        //TODO:realizar calculos e salvar valores em results
+        const id = req.params.id;
+        const exp = await Exp.findById({ _id: id });
+    },
+
+    async get_results(req, res) {
+        const id = req.params.id;
+        const exp = await Exp.findById({ _id: id });
     },
 };

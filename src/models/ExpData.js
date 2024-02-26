@@ -5,6 +5,9 @@ const ExpDataSchema = new mongoose.Schema(
         autor: {
             type: String,
         },
+        autor_id: {
+            type: String,
+        },
         name_of_experiment: {
             type: String,
             required: [true, "É necessário um nome"],
