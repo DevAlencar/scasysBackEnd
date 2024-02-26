@@ -78,49 +78,57 @@ const ExpDataSchema = new mongoose.Schema(
                     quim_comp: {
                         type: String,
                     },
-                    conc_tox_lim: {
-                        type: Object,
-                        value: {
-                            type: String,
+                    conc_tox_lim: [
+                        {
+                            type: Object,
+                            value: {
+                                type: String,
+                            },
+                            unit: {
+                                type: String,
+                            },
                         },
-                        unit: {
-                            type: String,
+                    ],
+                    exp_time: [
+                        {
+                            type: Object,
+                            value: {
+                                type: String,
+                            },
+                            unit: {
+                                type: String,
+                            },
                         },
-                    },
-                    exp_time: {
-                        type: Object,
-                        value: {
-                            type: String,
-                        },
-                        unit: {
-                            type: String,
-                        },
-                    },
+                    ],
                     src: {
                         type: String,
                     },
                 },
-                acumulation: {
-                    type: Object,
-                    quim_comp: {
-                        type: String,
-                    },
-                    fa: {
+                acumulation: [
+                    {
                         type: Object,
-                        value: {
+                        quim_comp: {
                             type: String,
                         },
-                        unit_esp: {
-                            type: String,
-                        },
-                        unit_met: {
+                        fa: [
+                            {
+                                type: Object,
+                                value: {
+                                    type: String,
+                                },
+                                unit_esp: {
+                                    type: String,
+                                },
+                                unit_met: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        src: {
                             type: String,
                         },
                     },
-                    src: {
-                        type: String,
-                    },
-                },
+                ],
             },
         ],
         cm_stage: [
