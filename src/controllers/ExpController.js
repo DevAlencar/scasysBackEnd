@@ -321,7 +321,7 @@ module.exports = {
         try {
             exp.save;
             return res
-                .status(500)
+                .status(201)
                 .json({ msg: "Fase de Segurança 2 adicionada com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
