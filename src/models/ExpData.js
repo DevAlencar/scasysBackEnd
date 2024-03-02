@@ -52,22 +52,23 @@ const ExpDataSchema = new mongoose.Schema(
                 },
             },
         },
-        ppgr_stage: [
+        //todo:verificar se é necessário guardar esses valores de ppwg
+        ppwg_stage: [
             {
-                mmr: {
-                    type: String,
-                },
                 mtdr: {
-                    type: String,
+                    type: Number,
+                },
+                mrr: {
+                    type: Number,
                 },
                 mtad: {
-                    type: String,
+                    type: Number,
                 },
-                td: {
-                    type: String,
+                mtr: {
+                    type: Number,
                 },
-                f: {
-                    type: String,
+                ft: {
+                    type: Number,
                 },
                 src: {
                     type: String,
@@ -571,41 +572,9 @@ const ExpDataSchema = new mongoose.Schema(
                 },
             },
         ],
-        results: [
-            {
-                type: Object,
-                1: {
-                    type: String,
-                },
-                2: {
-                    type: String,
-                },
-                3: {
-                    type: String,
-                },
-                4: {
-                    type: String,
-                },
-                5: {
-                    type: String,
-                },
-                6: {
-                    type: String,
-                },
-                7: {
-                    type: String,
-                },
-                8: {
-                    type: String,
-                },
-                9: {
-                    type: String,
-                },
-                10: {
-                    type: String,
-                },
-            },
-        ],
+        ppwg_result: {
+            type: Number,
+        },
     },
     { timestamps: true }
 );

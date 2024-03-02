@@ -1,5 +1,6 @@
 const Exp = require("../models/ExpData");
 const User = require("../models/UserData");
+const FtData = require("../models/FtData");
 
 module.exports = {
     async test(req, res) {
@@ -116,8 +117,6 @@ module.exports = {
             }
         }
 
-        //TODO: adicionar etapa de calculo;
-
         //find experiment and update
         const exp = await Exp.findByIdAndUpdate(
             { _id: id },
@@ -141,54 +140,64 @@ module.exports = {
         }
     },
 
-    async add_ppgr_stage(req, res) {
-        const { ppgr_stage } = req.body;
+    async add_ppwg_stage(req, res) {
+        const { ppwg_stage, mtrWithFt, ft_data, totalMass } = req.body;
         const id = req.params.id;
 
+        //todo: verificar se é necessário salvar os dados dos somatorios
+
         //validations
-        if (!ppgr_stage.mmr) {
-            return res.status(422).json({ msg: "É necessário o valor de MMR" });
+        if (!ppwg_stage.mrr) {
+            return res.status(422).json({ msg: "É necessário o valor de mrr" });
         }
-        if (!ppgr_stage.mtdr) {
+        if (!ppwg_stage.mtdr) {
             return res
                 .status(422)
                 .json({ msg: "É necessário o valor de MTDR" });
         }
-        if (!ppgr_stage.mtad) {
+        if (!ppwg_stage.mtad) {
             return res
                 .status(422)
                 .json({ msg: "É necessário o valor de MTAD" });
         }
-        if (!ppgr_stage.td) {
-            return res.status(422).json({ msg: "É necessário o valor de TD" });
+        if (!ppwg_stage.mtr) {
+            return res.status(422).json({ msg: "É necessário o valor de mtr" });
         }
-        if (!ppgr_stage.f) {
-            return res.status(422).json({ msg: "É necessário o valor de F" });
+        if (!ppwg_stage.ft) {
+            return res.status(422).json({ msg: "É necessário o valor de ft" });
         }
-        if (!ppgr_stage.src) {
+        if (!ppwg_stage.src) {
             return res.status(422).json({ msg: "É necessário uma fonte" });
         }
 
-        //TODO: adicionar métodos de calculo
+        let ppwg_result =
+            (ppwg_stage.mtr - ppwg_stage.mrr - ppwg_stage.mtad - mtrWithFt) /
+            totalMass;
+        ppwg_result = 1 - ppwg_result;
 
         //find experiment and update
         const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
-                ppgr_stage,
+                ppwg_stage,
+                ppwg_result,
             }
         );
-
         if (!exp) {
             return res.status(404).json({ msg: "Experimento não encontrado" });
         }
 
+        const ftSave = new FtData({
+            exp_id: id,
+            ft_data,
+        });
+
         //save
         try {
-            exp.save;
+            await ftSave.save();
             return res
                 .status(201)
-                .json({ msg: "Fase de ppgr adicionado com sucesso" });
+                .json({ msg: "Fase de ppwg adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
