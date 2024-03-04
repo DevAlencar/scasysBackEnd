@@ -16,8 +16,8 @@ const ExpDataSchema = new mongoose.Schema(
             type: String,
             required: [true, "É necessário um modo de calculo"],
         },
-        inventory_stage: {
-            properties: {
+        inventory_stage: [
+            {
                 stage: {
                     type: String,
                 },
@@ -27,31 +27,54 @@ const ExpDataSchema = new mongoose.Schema(
                 num_of_reps: {
                     type: Number,
                 },
-                especifity: {
-                    type: String,
-                },
-                item: {
-                    type: String,
-                },
-                chem_form: {
-                    type: String,
-                },
-                quantity: [
+                elements: [
                     {
-                        type: Array,
-                        value: {
+                        especifity: {
+                            type: String,
+                        },
+                        isRecyclable: {
+                            type: Boolean,
+                        },
+                        isBioDeposited: {
+                            type: Boolean,
+                        },
+                        isDegradable: [
+                            {
+                                verification: {
+                                    type: Boolean,
+                                },
+                                ft: {
+                                    type: Number,
+                                },
+                                src: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        item: {
+                            type: String,
+                        },
+                        chem_form: {
+                            type: String,
+                        },
+                        quantity: [
+                            {
+                                type: Array,
+                                value: {
+                                    type: String,
+                                },
+                            },
+                        ],
+                        unit: {
+                            type: String,
+                        },
+                        observation: {
                             type: String,
                         },
                     },
                 ],
-                unit: {
-                    type: String,
-                },
-                observation: {
-                    type: String,
-                },
             },
-        },
+        ],
         //todo:verificar se é necessário guardar esses valores de ppwg
         ppwg_stage: [
             {

@@ -5,16 +5,15 @@ const FtDataSchema = new mongoose.Schema(
         exp_id: {
             type: String,
         },
-        ft_data: [
-            {
-                quim_component: {
-                    type: String,
-                },
-                ft: {
-                    type: String,
-                },
-            },
-        ],
+        quim_component: {
+            type: String,
+        },
+        ft: {
+            type: String,
+        },
+        src: {
+            type: String,
+        },
     },
     { timestamps: true }
 );

@@ -67,53 +67,82 @@ module.exports = {
     async add_inventory_stage(req, res) {
         const { inventory_stage } = req.body;
         const id = req.params.id;
+        let { mmrSum, mtdrSum, mtadSum } = 0;
+        let { indicesInvStDeg, indicesElemDeg } = [];
 
         //validations
         for (let i = 0; i < inventory_stage.properties.length; i++) {
-            if (!inventory_stage.properties[i].stage) {
+            if (!inventory_stage[i].stage) {
                 return res.status(422).json({ msg: "É necessário um estágio" });
             }
-            if (!inventory_stage.properties[i].name) {
+            if (!inventory_stage[i].name) {
                 return res.status(422).json({ msg: "É necessário um nome" });
             }
-            if (!inventory_stage.properties[i].num_of_reps) {
+            if (!inventory_stage[i].num_of_reps) {
                 return res
                     .status(422)
                     .json({ msg: "É necessário um numero de repetições" });
             }
-            if (!inventory_stage.properties[i].especifity) {
-                return res
-                    .status(422)
-                    .json({ msg: "É necessário uma especificidade" });
-            }
-            if (!inventory_stage.properties[i].item) {
-                return res.status(422).json({ msg: "É necessário um item" });
-            }
-            if (!inventory_stage.properties[i].chem_form) {
-                return res
-                    .status(422)
-                    .json({ msg: "É necessário uma formula quimica" });
-            }
-            for (
-                let x = 0;
-                x < inventory_stage.properties[i].quantity.length;
-                x++
-            ) {
-                if (!inventory_stage.properties[i].quantity[x].value) {
+            for (let j = 0; j < inventory_stage[i].elements.length; j++) {
+                //contador de elementos que sao degradáveis
+                if (
+                    inventory_stage[i].elements[j].isDegradable[0]
+                        .verification === true
+                ) {
+                    indicesElemDeg.push(i);
+                    indicesInvStDeg.push(j);
+                }
+                if (!inventory_stage[i].elements[j].especifity) {
                     return res
                         .status(422)
-                        .json({ msg: "É necessário valores" });
+                        .json({ msg: "É necessário uma especificidade" });
                 }
-            }
-            if (!inventory_stage.properties[i].unit) {
-                return res
-                    .status(422)
-                    .json({ msg: "É necessário uma unidade" });
-            }
-            if (!inventory_stage.properties[i].observation) {
-                return res
-                    .status(422)
-                    .json({ msg: "É necessário uma observação" });
+                if (!inventory_stage[i].elements[j].item) {
+                    return res
+                        .status(422)
+                        .json({ msg: "É necessário um item" });
+                }
+                if (!inventory_stage[i].elements[j].chem_form) {
+                    return res
+                        .status(422)
+                        .json({ msg: "É necessário uma formula quimica" });
+                }
+                for (
+                    let k = 0;
+                    k < inventory_stage[i].elements[j].quantity.length;
+                    k++
+                ) {
+                    if (!inventory_stage[i].elements[j].quantity[x].value) {
+                        return res
+                            .status(422)
+                            .json({ msg: "É necessário valores" });
+                    }
+                    //criação de somatórios
+                    if (
+                        inventory_stage[i].elements[j].especifity === "Residuo"
+                    ) {
+                        mmrSum =
+                            mmrSum +
+                            inventory_stage[i].elements[j].quantity[x].value;
+                    }
+                    if (inventory_stage[i].elements[j].isRecyclable === true) {
+                        mtdrSum =
+                            mtdrSum +
+                            inventory_stage[i].elements[j].quantity[x].value;
+                    }
+                    if (
+                        inventory_stage[i].elements[j].isBioDeposited === true
+                    ) {
+                        mtadSum =
+                            mtadSum +
+                            inventory_stage[i].elements[j].quantity[x].value;
+                    }
+                }
+                if (!inventory_stage[i].elements[j].unit) {
+                    return res
+                        .status(422)
+                        .json({ msg: "É necessário uma unidade" });
+                }
             }
         }
 
@@ -127,6 +156,20 @@ module.exports = {
 
         if (!exp) {
             return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //create Ft Data
+        for (let i = 0; i < indicesInvStDeg.length; i++) {
+            for (let j = 0; j < indicesElemDeg.length; j++) {
+                let ftSave = new FtData({
+                    exp_id: id,
+                    quim_component: inventory_stage[i].elements[j].chem_form,
+                    ft: inventory_stage[i].elements[j].isDegradable[0].ft,
+                    src: inventory_stage[i].elements[j].isDegradable[0].src,
+                });
+
+                await ftSave.save();
+            }
         }
 
         //save
