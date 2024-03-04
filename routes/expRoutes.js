@@ -6,7 +6,7 @@ const ExpController = require("../src/controllers/ExpController");
 
 routes.get("/test", ExpController.test);
 routes.post("/newExp/:id", ExpController.new_procedure);
-routes.post("/invetoryStage/:id", ExpController.add_inventory_stage_with_ppwg);
+routes.post("/invetoryStage/:id", ExpController.add_inventory_stage);
 //routes.post("/ppwgStage/:id", ExpController.add_ppwg_stage);
 routes.post("/securityStageOne/:id", ExpController.add_security_stage_one);
 routes.post("/cmStage/:id", ExpController.add_cm_stage);
@@ -18,7 +18,6 @@ routes.post("/waterCons/:id", ExpController.add_water_cons);
 routes.post("/radIonStage/:id", ExpController.add_rad_ion_stage);
 routes.post("/resorCosumStage/:id", ExpController.add_resor_cosum_stage);
 routes.post("/holAmbStage/:id", ExpController.add_hol_amb_stage);
-routes.post("/addResults/:id", ExpController.add_results);
 
 routes.get("/showResults/:id", ExpController.get_results);
 

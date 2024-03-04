@@ -64,11 +64,11 @@ module.exports = {
         }
     },
 
-    async add_inventory_stage_with_ppwg(req, res) {
+    async add_inventory_stage(req, res) {
         const { inventory_stage } = req.body;
         const id = req.params.id;
-        let { mmrSum, mtdrSum, mtadSum, mtrWithFt } = 0;
-        let { indicesInvStDeg, indicesElemDeg } = [];
+        let indicesElemDeg,
+            indicesInvStDeg = [];
 
         //validations
         for (let i = 0; i < inventory_stage.properties.length; i++) {
@@ -84,13 +84,13 @@ module.exports = {
                     .json({ msg: "É necessário um numero de repetições" });
             }
             for (let j = 0; j < inventory_stage[i].elements.length; j++) {
-                //contador de elementos que sao degradáveis
+                //verificando e guardando os indices dos elementos que sao degradáveis
                 if (
                     inventory_stage[i].elements[j].isDegradable[0]
                         .verification === true
                 ) {
-                    indicesElemDeg.push(i);
-                    indicesInvStDeg.push(j);
+                    indicesElemDeg.push(j);
+                    indicesInvStDeg.push(i);
                 }
                 if (!inventory_stage[i].elements[j].especifity) {
                     return res
@@ -117,34 +117,6 @@ module.exports = {
                             .status(422)
                             .json({ msg: "É necessário valores" });
                     }
-                    //criação de somatórios
-                    if (
-                        inventory_stage[i].elements[j].especifity === "Residuo"
-                    ) {
-                        mmrSum =
-                            mmrSum +
-                            inventory_stage[i].elements[j].quantity[x].value;
-                    }
-                    if (inventory_stage[i].elements[j].isRecyclable === true) {
-                        mtdrSum =
-                            mtdrSum +
-                            inventory_stage[i].elements[j].quantity[x].value;
-                    }
-                    if (
-                        inventory_stage[i].elements[j].isBioDeposited === true
-                    ) {
-                        mtadSum =
-                            mtadSum +
-                            inventory_stage[i].elements[j].quantity[x].value;
-                    }
-                    if (
-                        inventory_stage[i].elements[j].isDegradable[0]
-                            .verification === true
-                    ) {
-                        mtrWithFt +=
-                            inventory_stage[i].elements[j].quantity[x].value *
-                            inventory_stage[i].elements[j].isDegradable[0].ft;
-                    }
                 }
                 if (!inventory_stage[i].elements[j].unit) {
                     return res
@@ -154,36 +126,11 @@ module.exports = {
             }
         }
 
-        //create Ft Data
-        for (let i = 0; i < indicesInvStDeg.length; i++) {
-            for (let j = 0; j < indicesElemDeg.length; j++) {
-                let ftSave = new FtData({
-                    exp_id: id,
-                    quim_component:
-                        inventory_stage[indicesInvStDeg[i]].elements[
-                            indicesElemDeg[j]
-                        ].chem_form,
-                    ft: inventory_stage[indicesInvStDeg[i]].elements[
-                        indicesElemDeg[j]
-                    ].isDegradable[0].ft,
-                    src: inventory_stage[indicesInvStDeg[i]].elements[
-                        indicesElemDeg[j]
-                    ].isDegradable[0].src,
-                });
-
-                await ftSave.save();
-            }
-        }
-
-        let ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
-        ppwg_result = 1 - ppwg_result;
-
         //find experiment and update
         const exp = await Exp.findByIdAndUpdate(
             { _id: id },
             {
                 inventory_stage,
-                ppwg_result,
             }
         );
 
@@ -193,6 +140,25 @@ module.exports = {
 
         //save
         try {
+            //create Ft Data
+            for (let i = 0; i < indicesInvStDeg.length; i++) {
+                for (let j = 0; j < indicesElemDeg.length; j++) {
+                    let ftSave = new FtData({
+                        exp_id: id,
+                        quim_component:
+                            inventory_stage[indicesInvStDeg[i]].elements[
+                                indicesElemDeg[j]
+                            ].chem_form,
+                        ft: inventory_stage[indicesInvStDeg[i]].elements[
+                            indicesElemDeg[j]
+                        ].isDegradable[0].ft,
+                        src: inventory_stage[indicesInvStDeg[i]].elements[
+                            indicesElemDeg[j]
+                        ].isDegradable[0].src,
+                    });
+                    await ftSave.save();
+                }
+            }
             await exp.save();
             return res
                 .status(200)
@@ -619,13 +585,75 @@ module.exports = {
         }
     },
 
-    async add_results(req, res) {
-        const id = req.params.id;
-        const exp = await Exp.findById({ _id: id });
-    },
-
     async get_results(req, res) {
         const id = req.params.id;
         const exp = await Exp.findById({ _id: id });
+        let { mmrSum, mtdrSum, mtadSum, mtrWithFt, totalMass } = 0;
+
+        for (let i = 0; i < exp.inventory_stage.elements.length; i++) {
+            for (let j = 0; j < exp.inventory_stage[i].elements.length; j++) {
+                for (
+                    let k = 0;
+                    k < exp.inventory_stage[i].elements[j].quantity.length;
+                    k++
+                ) {
+                    //criação de somatórios
+                    totalMass +=
+                        exp.inventory_stage[i].elements[j].quantity[x].value;
+                    if (
+                        exp.inventory_stage[i].elements[j].especifity ===
+                        "Residuo"
+                    ) {
+                        mmrSum =
+                            mmrSum +
+                            exp.inventory_stage[i].elements[j].quantity[x]
+                                .value;
+                    }
+                    if (
+                        exp.inventory_stage[i].elements[j].isRecyclable === true
+                    ) {
+                        mtdrSum =
+                            mtdrSum +
+                            exp.inventory_stage[i].elements[j].quantity[x]
+                                .value;
+                    }
+                    if (
+                        exp.inventory_stage[i].elements[j].isBioDeposited ===
+                        true
+                    ) {
+                        mtadSum =
+                            mtadSum +
+                            exp.inventory_stage[i].elements[j].quantity[x]
+                                .value;
+                    }
+                    if (
+                        exp.inventory_stage[i].elements[j].isDegradable[0]
+                            .verification === true
+                    ) {
+                        mtrWithFt +=
+                            exp.inventory_stage[i].elements[j].quantity[x]
+                                .value *
+                            exp.inventory_stage[i].elements[j].isDegradable[0]
+                                .ft;
+                    }
+                }
+            }
+        }
+
+        let ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
+        ppwg_result = 1 - ppwg_result;
+
+        await exp.updateOne({
+            ppwg_result,
+        });
+
+        try {
+            await exp.save();
+            return res
+                .status(200)
+                .json({ msg: "Resultados calculados com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
     },
 };
