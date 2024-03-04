@@ -159,9 +159,16 @@ module.exports = {
             for (let j = 0; j < indicesElemDeg.length; j++) {
                 let ftSave = new FtData({
                     exp_id: id,
-                    quim_component: inventory_stage[i].elements[j].chem_form,
-                    ft: inventory_stage[i].elements[j].isDegradable[0].ft,
-                    src: inventory_stage[i].elements[j].isDegradable[0].src,
+                    quim_component:
+                        inventory_stage[indicesInvStDeg[i]].elements[
+                            indicesElemDeg[j]
+                        ].chem_form,
+                    ft: inventory_stage[indicesInvStDeg[i]].elements[
+                        indicesElemDeg[j]
+                    ].isDegradable[0].ft,
+                    src: inventory_stage[indicesInvStDeg[i]].elements[
+                        indicesElemDeg[j]
+                    ].isDegradable[0].src,
                 });
 
                 await ftSave.save();
