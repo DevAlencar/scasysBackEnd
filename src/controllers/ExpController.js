@@ -195,7 +195,7 @@ module.exports = {
         }
     },
 
-    async add_ppwg_stage(req, res) {
+    /*async add_ppwg_stage(req, res) {
         const { ppwg_stage, mtrWithFt, ft_data, totalMass } = req.body;
         const id = req.params.id;
 
@@ -256,7 +256,7 @@ module.exports = {
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
-    },
+    },*/
 
     async add_security_stage_one(req, res) {
         const { security_stage_one } = req.body;
