@@ -64,10 +64,10 @@ module.exports = {
         }
     },
 
-    async add_inventory_stage(req, res) {
+    async add_inventory_stage_with_ppwg(req, res) {
         const { inventory_stage } = req.body;
         const id = req.params.id;
-        let { mmrSum, mtdrSum, mtadSum } = 0;
+        let { mmrSum, mtdrSum, mtadSum, mtrWithFt } = 0;
         let { indicesInvStDeg, indicesElemDeg } = [];
 
         //validations
@@ -137,6 +137,14 @@ module.exports = {
                             mtadSum +
                             inventory_stage[i].elements[j].quantity[x].value;
                     }
+                    if (
+                        inventory_stage[i].elements[j].isDegradable[0]
+                            .verification === true
+                    ) {
+                        mtrWithFt +=
+                            inventory_stage[i].elements[j].quantity[x].value *
+                            inventory_stage[i].elements[j].isDegradable[0].ft;
+                    }
                 }
                 if (!inventory_stage[i].elements[j].unit) {
                     return res
@@ -144,18 +152,6 @@ module.exports = {
                         .json({ msg: "É necessário uma unidade" });
                 }
             }
-        }
-
-        //find experiment and update
-        const exp = await Exp.findByIdAndUpdate(
-            { _id: id },
-            {
-                inventory_stage,
-            }
-        );
-
-        if (!exp) {
-            return res.status(404).json({ msg: "Experimento não encontrado" });
         }
 
         //create Ft Data
@@ -170,6 +166,22 @@ module.exports = {
 
                 await ftSave.save();
             }
+        }
+
+        let ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
+        ppwg_result = 1 - ppwg_result;
+
+        //find experiment and update
+        const exp = await Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                inventory_stage,
+                ppwg_result,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
         }
 
         //save
