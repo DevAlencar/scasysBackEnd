@@ -521,24 +521,24 @@ module.exports = {
         const exp = await Exp.findById({ _id: id });
         let { mmrSum, mtdrSum, mtadSum, mtrWithFt, totalMass } = 0;
 
-        for (let i = 0; i < exp.inventory_stage.elements.length; i++) {
+        for (let i = 0; i < exp.inventory_stage.length; i++) {
             for (let j = 0; j < exp.inventory_stage[i].elements.length; j++) {
                 for (let k = 0; k < exp.inventory_stage[i].elements[j].quantity.length; k++) {
                     //criação de somatórios
-                    totalMass += exp.inventory_stage[i].elements[j].quantity[x].value;
+                    totalMass += exp.inventory_stage[i].elements[j].quantity[k].value;
                     if (exp.inventory_stage[i].elements[j].especifity === "Residuo") {
-                        mmrSum = mmrSum + exp.inventory_stage[i].elements[j].quantity[x].value;
+                        mmrSum = mmrSum + exp.inventory_stage[i].elements[j].quantity[k].value;
                     }
                     if (exp.inventory_stage[i].elements[j].isRecyclable === true) {
-                        mtdrSum = mtdrSum + exp.inventory_stage[i].elements[j].quantity[x].value;
+                        mtdrSum = mtdrSum + exp.inventory_stage[i].elements[j].quantity[k].value;
                     }
                     if (exp.inventory_stage[i].elements[j].isBioDeposited === true) {
-                        mtadSum = mtadSum + exp.inventory_stage[i].elements[j].quantity[x].value;
+                        mtadSum = mtadSum + exp.inventory_stage[i].elements[j].quantity[k].value;
                     }
-                    if (exp.inventory_stage[i].elements[j].isDegradable[0].verification === true) {
+                    if (exp.inventory_stage[i].elements[j].isDegradable.verification === true) {
                         mtrWithFt +=
-                            exp.inventory_stage[i].elements[j].quantity[x].value *
-                            exp.inventory_stage[i].elements[j].isDegradable[0].ft;
+                            exp.inventory_stage[i].elements[j].quantity[k].value *
+                            exp.inventory_stage[i].elements[j].isDegradable.ft;
                     }
                 }
             }
