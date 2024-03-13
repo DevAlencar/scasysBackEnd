@@ -26,7 +26,7 @@ module.exports = {
         //experiment save
         try {
             await exp.save();
-            return res.status(201).json({ msg: "Experimento criado com sucesso" });
+            return res.status(201).json({ msg: "Experimento criado com sucesso", id: exp._id });
         } catch (err) {
             return res.status(500).json(err.message);
         }

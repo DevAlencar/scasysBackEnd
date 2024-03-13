@@ -5,21 +5,16 @@ require("dotenv/config");
 
 module.exports = {
     async register(req, res) {
-        const { name, email, password, confirmPassword, institution } =
-            req.body;
+        const { name, email, password, confirmPassword, institution } = req.body;
 
         //validations
 
         //verificando existencia dos dados
         if (!confirmPassword) {
-            return res
-                .status(422)
-                .json("msg: É necessário uma senha de confirmaçao");
+            return res.status(422).json("msg: É necessário uma senha de confirmaçao");
         }
         if (password !== confirmPassword) {
-            return res
-                .status(422)
-                .json("msg: a senha de confirmação está diferente");
+            return res.status(422).json("msg: a senha de confirmação está diferente");
         }
 
         //verificando existencia do usuario
@@ -88,9 +83,7 @@ module.exports = {
             );
 
             await user.save();
-            return res
-                .status(200)
-                .json({ msg: "Login realizado com sucesso", token });
+            return res.status(200).json({ msg: "Login realizado com sucesso", token: token, id: user._id });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -106,9 +99,7 @@ module.exports = {
                 return res.status(404).json({ msg: "Usuário não encontrado" });
             }
 
-            return res
-                .status(200)
-                .json({ msg: "Usuário deletado com sucesso" });
+            return res.status(200).json({ msg: "Usuário deletado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
