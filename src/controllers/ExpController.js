@@ -26,9 +26,7 @@ module.exports = {
         //experiment save
         try {
             await exp.save();
-            return res
-                .status(201)
-                .json({ msg: "Experimento criado com sucesso" });
+            return res.status(201).json({ msg: "Experimento criado com sucesso" });
         } catch (err) {
             return res.status(500).json(err.message);
         }
@@ -38,10 +36,7 @@ module.exports = {
         const expId = req.params.expId;
         const userId = req.params.userId;
 
-        const [exp, user] = await Promise.all([
-            Exp.findById({ _id: expId }),
-            User.findById({ _id: userId }),
-        ]);
+        const [exp, user] = await Promise.all([Exp.findById({ _id: expId }), User.findById({ _id: userId })]);
 
         if (!user) {
             return res.status(404).json({ msg: "Usuário não encontrado" });
@@ -54,24 +49,20 @@ module.exports = {
             if (user.id === exp.autor_id) {
                 await Exp.deleteOne({ _id: expId });
             }
-            return res
-                .status(201)
-                .json({ msg: "Experimento deletado com sucesso" });
+            return res.status(201).json({ msg: "Experimento deletado com sucesso" });
         } catch (err) {
-            return res
-                .status(500)
-                .json({ msg: "serverError: experimento não deletado" });
+            return res.status(500).json({ msg: "serverError: experimento não deletado" });
         }
     },
 
     async add_inventory_stage(req, res) {
         const { inventory_stage } = req.body;
         const id = req.params.id;
-        let indicesElemDeg,
-            indicesInvStDeg = [];
+        let indicesElemDeg = [];
+        let indicesInvStDeg = [];
 
         //validations
-        for (let i = 0; i < inventory_stage.properties.length; i++) {
+        for (let i = 0; i < inventory_stage.length; i++) {
             if (!inventory_stage[i].stage) {
                 return res.status(422).json({ msg: "É necessário um estágio" });
             }
@@ -79,49 +70,30 @@ module.exports = {
                 return res.status(422).json({ msg: "É necessário um nome" });
             }
             if (!inventory_stage[i].num_of_reps) {
-                return res
-                    .status(422)
-                    .json({ msg: "É necessário um numero de repetições" });
+                return res.status(422).json({ msg: "É necessário um numero de repetições" });
             }
             for (let j = 0; j < inventory_stage[i].elements.length; j++) {
                 //verificando e guardando os indices dos elementos que sao degradáveis
-                if (
-                    inventory_stage[i].elements[j].isDegradable[0]
-                        .verification === true
-                ) {
+                if (inventory_stage[i].elements[j].isDegradable.verification === true) {
                     indicesElemDeg.push(j);
                     indicesInvStDeg.push(i);
                 }
                 if (!inventory_stage[i].elements[j].especifity) {
-                    return res
-                        .status(422)
-                        .json({ msg: "É necessário uma especificidade" });
+                    return res.status(422).json({ msg: "É necessário uma especificidade" });
                 }
                 if (!inventory_stage[i].elements[j].item) {
-                    return res
-                        .status(422)
-                        .json({ msg: "É necessário um item" });
+                    return res.status(422).json({ msg: "É necessário um item" });
                 }
                 if (!inventory_stage[i].elements[j].chem_form) {
-                    return res
-                        .status(422)
-                        .json({ msg: "É necessário uma formula quimica" });
+                    return res.status(422).json({ msg: "É necessário uma formula quimica" });
                 }
-                for (
-                    let k = 0;
-                    k < inventory_stage[i].elements[j].quantity.length;
-                    k++
-                ) {
-                    if (!inventory_stage[i].elements[j].quantity[x].value) {
-                        return res
-                            .status(422)
-                            .json({ msg: "É necessário valores" });
+                for (let k = 0; k < inventory_stage[i].elements[j].quantity.length; k++) {
+                    if (!inventory_stage[i].elements[j].quantity[k].value) {
+                        return res.status(422).json({ msg: "É necessário valores" });
                     }
                 }
                 if (!inventory_stage[i].elements[j].unit) {
-                    return res
-                        .status(422)
-                        .json({ msg: "É necessário uma unidade" });
+                    return res.status(422).json({ msg: "É necessário uma unidade" });
                 }
             }
         }
@@ -142,27 +114,16 @@ module.exports = {
         try {
             //create Ft Data
             for (let i = 0; i < indicesInvStDeg.length; i++) {
-                for (let j = 0; j < indicesElemDeg.length; j++) {
-                    let ftSave = new FtData({
-                        exp_id: id,
-                        quim_component:
-                            inventory_stage[indicesInvStDeg[i]].elements[
-                                indicesElemDeg[j]
-                            ].chem_form,
-                        ft: inventory_stage[indicesInvStDeg[i]].elements[
-                            indicesElemDeg[j]
-                        ].isDegradable[0].ft,
-                        src: inventory_stage[indicesInvStDeg[i]].elements[
-                            indicesElemDeg[j]
-                        ].isDegradable[0].src,
-                    });
-                    await ftSave.save();
-                }
+                let ftSave = new FtData({
+                    exp_id: id,
+                    quim_component: inventory_stage[indicesInvStDeg[i]].elements[indicesElemDeg[i]].chem_form,
+                    ft: inventory_stage[indicesInvStDeg[i]].elements[indicesElemDeg[i]].isDegradable.ft,
+                    src: inventory_stage[indicesInvStDeg[i]].elements[indicesElemDeg[i]].isDegradable.src,
+                });
+                await ftSave.save();
             }
             await exp.save();
-            return res
-                .status(200)
-                .json({ msg: "Fase de invetário adicionado com sucesso" });
+            return res.status(200).json({ msg: "Fase de invetário adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -237,19 +198,13 @@ module.exports = {
 
         //validations
         if (!security_stage_one.exposition.quim_comp) {
-            return res
-                .status(422)
-                .json({ msg: "É necessário um componente químico" });
+            return res.status(422).json({ msg: "É necessário um componente químico" });
         }
         if (!security_stage_one.exposition.conc_tox_lim.value) {
-            return res
-                .status(422)
-                .json({ msg: "É necessário o valor de limite tóxico" });
+            return res.status(422).json({ msg: "É necessário o valor de limite tóxico" });
         }
         if (!security_stage_one.exposition.conc_tox_lim.unit) {
-            return res
-                .status(422)
-                .json({ msg: "É necessário uma unidade para limite tóxico" });
+            return res.status(422).json({ msg: "É necessário uma unidade para limite tóxico" });
         }
         if (!security_stage_one.exposition.exp_time.value) {
             return res.status(422).json({
@@ -282,9 +237,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fase de segurança 1 adicionado com sucesso" });
+            return res.status(500).json({ msg: "Fase de segurança 1 adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -296,14 +249,10 @@ module.exports = {
 
         //validations
         if (!cm_stage.quim_comp) {
-            return res
-                .status(422)
-                .json({ msg: "É necessário um componente químico" });
+            return res.status(422).json({ msg: "É necessário um componente químico" });
         }
         if (!cm_stage.cancer) {
-            return res
-                .status(422)
-                .json({ msg: "É necessário o valor de cancer" });
+            return res.status(422).json({ msg: "É necessário o valor de cancer" });
         }
         if (!cm_stage.src) {
             return res.status(422).json({ msg: "É necessário uma fonte" });
@@ -326,9 +275,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fase CM adicionado com sucesso" });
+            return res.status(500).json({ msg: "Fase CM adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -357,9 +304,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(201)
-                .json({ msg: "Fase de Segurança 2 adicionada com sucesso" });
+            return res.status(201).json({ msg: "Fase de Segurança 2 adicionada com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -388,9 +333,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fase CE adicionado com sucesso" });
+            return res.status(500).json({ msg: "Fase CE adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -419,9 +362,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fase Energia adicionado com sucesso" });
+            return res.status(500).json({ msg: "Fase Energia adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -453,9 +394,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fases Ambientais adicionadas com sucesso" });
+            return res.status(500).json({ msg: "Fases Ambientais adicionadas com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -484,9 +423,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fase Agua adicionado com sucesso" });
+            return res.status(500).json({ msg: "Fase Agua adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -515,9 +452,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fase Radio adicionada com sucesso" });
+            return res.status(500).json({ msg: "Fase Radio adicionada com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -546,9 +481,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fase resor_cosum adicionado com sucesso" });
+            return res.status(500).json({ msg: "Fase resor_cosum adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -577,9 +510,7 @@ module.exports = {
         //save
         try {
             exp.save;
-            return res
-                .status(500)
-                .json({ msg: "Fase hol_amb adicionado com sucesso" });
+            return res.status(500).json({ msg: "Fase hol_amb adicionado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -592,49 +523,22 @@ module.exports = {
 
         for (let i = 0; i < exp.inventory_stage.elements.length; i++) {
             for (let j = 0; j < exp.inventory_stage[i].elements.length; j++) {
-                for (
-                    let k = 0;
-                    k < exp.inventory_stage[i].elements[j].quantity.length;
-                    k++
-                ) {
+                for (let k = 0; k < exp.inventory_stage[i].elements[j].quantity.length; k++) {
                     //criação de somatórios
-                    totalMass +=
-                        exp.inventory_stage[i].elements[j].quantity[x].value;
-                    if (
-                        exp.inventory_stage[i].elements[j].especifity ===
-                        "Residuo"
-                    ) {
-                        mmrSum =
-                            mmrSum +
-                            exp.inventory_stage[i].elements[j].quantity[x]
-                                .value;
+                    totalMass += exp.inventory_stage[i].elements[j].quantity[x].value;
+                    if (exp.inventory_stage[i].elements[j].especifity === "Residuo") {
+                        mmrSum = mmrSum + exp.inventory_stage[i].elements[j].quantity[x].value;
                     }
-                    if (
-                        exp.inventory_stage[i].elements[j].isRecyclable === true
-                    ) {
-                        mtdrSum =
-                            mtdrSum +
-                            exp.inventory_stage[i].elements[j].quantity[x]
-                                .value;
+                    if (exp.inventory_stage[i].elements[j].isRecyclable === true) {
+                        mtdrSum = mtdrSum + exp.inventory_stage[i].elements[j].quantity[x].value;
                     }
-                    if (
-                        exp.inventory_stage[i].elements[j].isBioDeposited ===
-                        true
-                    ) {
-                        mtadSum =
-                            mtadSum +
-                            exp.inventory_stage[i].elements[j].quantity[x]
-                                .value;
+                    if (exp.inventory_stage[i].elements[j].isBioDeposited === true) {
+                        mtadSum = mtadSum + exp.inventory_stage[i].elements[j].quantity[x].value;
                     }
-                    if (
-                        exp.inventory_stage[i].elements[j].isDegradable[0]
-                            .verification === true
-                    ) {
+                    if (exp.inventory_stage[i].elements[j].isDegradable[0].verification === true) {
                         mtrWithFt +=
-                            exp.inventory_stage[i].elements[j].quantity[x]
-                                .value *
-                            exp.inventory_stage[i].elements[j].isDegradable[0]
-                                .ft;
+                            exp.inventory_stage[i].elements[j].quantity[x].value *
+                            exp.inventory_stage[i].elements[j].isDegradable[0].ft;
                     }
                 }
             }
@@ -649,9 +553,7 @@ module.exports = {
 
         try {
             await exp.save();
-            return res
-                .status(200)
-                .json({ msg: "Resultados calculados com sucesso" });
+            return res.status(200).json({ msg: "Resultados calculados com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
