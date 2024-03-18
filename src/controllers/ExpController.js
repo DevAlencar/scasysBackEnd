@@ -60,6 +60,7 @@ module.exports = {
         const id = req.params.id;
         let indicesElemDeg = [];
         let indicesInvStDeg = [];
+        let indicesEtapa = [];
 
         //validations
         for (let i = 0; i < inventory_stage.length; i++) {
@@ -72,28 +73,31 @@ module.exports = {
             if (!inventory_stage[i].num_of_reps) {
                 return res.status(422).json({ msg: "É necessário um numero de repetições" });
             }
-            for (let j = 0; j < inventory_stage[i].elements.length; j++) {
-                //verificando e guardando os indices dos elementos que sao degradáveis
-                if (inventory_stage[i].elements[j].isDegradable.verification === true) {
-                    indicesElemDeg.push(j);
-                    indicesInvStDeg.push(i);
-                }
-                if (!inventory_stage[i].elements[j].especifity) {
-                    return res.status(422).json({ msg: "É necessário uma especificidade" });
-                }
-                if (!inventory_stage[i].elements[j].item) {
-                    return res.status(422).json({ msg: "É necessário um item" });
-                }
-                if (!inventory_stage[i].elements[j].chem_form) {
-                    return res.status(422).json({ msg: "É necessário uma formula quimica" });
-                }
-                for (let k = 0; k < inventory_stage[i].elements[j].quantity.length; k++) {
-                    if (!inventory_stage[i].elements[j].quantity[k].value) {
-                        return res.status(422).json({ msg: "É necessário valores" });
+            for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
+                for (let j = 0; j < inventory_stage[i].etapa[l].elements.length; j++) {
+                    //verificando e guardando os indices dos elementos que sao degradáveis
+                    if (inventory_stage[i].etapa[l].elements[j].isDegradable.verification === true) {
+                        indicesElemDeg.push(j);
+                        indicesInvStDeg.push(i);
+                        indicesEtapa.push(l);
                     }
-                }
-                if (!inventory_stage[i].elements[j].unit) {
-                    return res.status(422).json({ msg: "É necessário uma unidade" });
+                    if (!inventory_stage[i].etapa[l].elements[j].especifity) {
+                        return res.status(422).json({ msg: "É necessário uma especificidade" });
+                    }
+                    if (!inventory_stage[i].etapa[l].elements[j].item) {
+                        return res.status(422).json({ msg: "É necessário um item" });
+                    }
+                    if (!inventory_stage[i].etapa[l].elements[j].chem_form) {
+                        return res.status(422).json({ msg: "É necessário uma formula quimica" });
+                    }
+                    for (let k = 0; k < inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
+                        if (!inventory_stage[i].etapa[l].elements[j].quantity[k].value) {
+                            return res.status(422).json({ msg: "É necessário valores" });
+                        }
+                    }
+                    if (!inventory_stage[i].etapa[l].elements[j].unit) {
+                        return res.status(422).json({ msg: "É necessário uma unidade" });
+                    }
                 }
             }
         }
@@ -116,9 +120,13 @@ module.exports = {
             for (let i = 0; i < indicesInvStDeg.length; i++) {
                 let ftSave = new FtData({
                     exp_id: id,
-                    quim_component: inventory_stage[indicesInvStDeg[i]].elements[indicesElemDeg[i]].chem_form,
-                    ft: inventory_stage[indicesInvStDeg[i]].elements[indicesElemDeg[i]].isDegradable.ft,
-                    src: inventory_stage[indicesInvStDeg[i]].elements[indicesElemDeg[i]].isDegradable.src,
+                    quim_component:
+                        inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
+                            .chem_form,
+                    ft: inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
+                        .isDegradable.ft,
+                    src: inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
+                        .isDegradable.src,
                 });
                 await ftSave.save();
             }
@@ -522,23 +530,25 @@ module.exports = {
         let { mmrSum, mtdrSum, mtadSum, mtrWithFt, totalMass } = 0;
 
         for (let i = 0; i < exp.inventory_stage.length; i++) {
-            for (let j = 0; j < exp.inventory_stage[i].elements.length; j++) {
-                for (let k = 0; k < exp.inventory_stage[i].elements[j].quantity.length; k++) {
-                    //criação de somatórios
-                    totalMass += exp.inventory_stage[i].elements[j].quantity[k].value;
-                    if (exp.inventory_stage[i].elements[j].especifity === "Residuo") {
-                        mmrSum = mmrSum + exp.inventory_stage[i].elements[j].quantity[k].value;
-                    }
-                    if (exp.inventory_stage[i].elements[j].isRecyclable === true) {
-                        mtdrSum = mtdrSum + exp.inventory_stage[i].elements[j].quantity[k].value;
-                    }
-                    if (exp.inventory_stage[i].elements[j].isBioDeposited === true) {
-                        mtadSum = mtadSum + exp.inventory_stage[i].elements[j].quantity[k].value;
-                    }
-                    if (exp.inventory_stage[i].elements[j].isDegradable.verification === true) {
-                        mtrWithFt +=
-                            exp.inventory_stage[i].elements[j].quantity[k].value *
-                            exp.inventory_stage[i].elements[j].isDegradable.ft;
+            for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
+                for (let j = 0; j < exp.inventory_stage[i].etapa[l].elements.length; j++) {
+                    for (let k = 0; k < exp.inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
+                        //criação de somatórios
+                        totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        if (exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
+                            mmrSum = mmrSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        }
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true) {
+                            mtdrSum = mtdrSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        }
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited === true) {
+                            mtadSum = mtadSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        }
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.verification === true) {
+                            mtrWithFt +=
+                                exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value *
+                                exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft;
+                        }
                     }
                 }
             }

@@ -21,56 +21,61 @@ const ExpDataSchema = new mongoose.Schema(
                 stage: {
                     type: String,
                 },
-                name: {
-                    type: String,
-                },
-                num_of_reps: {
-                    type: Number,
-                },
-                elements: [
+                etapa: [
                     {
-                        especifity: {
+                        type: Array,
+                        name: {
                             type: String,
                         },
-                        isRecyclable: {
-                            type: Boolean,
+                        num_of_reps: {
+                            type: Number,
                         },
-                        isBioDeposited: {
-                            type: Boolean,
-                        },
-                        isDegradable: [
+                        elements: [
                             {
-                                verification: {
+                                especifity: {
+                                    type: String,
+                                },
+                                isRecyclable: {
                                     type: Boolean,
                                 },
-                                ft: {
-                                    type: Number,
+                                isBioDeposited: {
+                                    type: Boolean,
                                 },
-                                src: {
+                                isDegradable: [
+                                    {
+                                        verification: {
+                                            type: Boolean,
+                                        },
+                                        ft: {
+                                            type: Number,
+                                        },
+                                        src: {
+                                            type: String,
+                                        },
+                                    },
+                                ],
+                                item: {
+                                    type: String,
+                                },
+                                chem_form: {
+                                    type: String,
+                                },
+                                quantity: [
+                                    {
+                                        type: Array,
+                                        value: {
+                                            type: Number,
+                                        },
+                                    },
+                                ],
+                                unit: {
+                                    type: String,
+                                },
+                                observation: {
                                     type: String,
                                 },
                             },
                         ],
-                        item: {
-                            type: String,
-                        },
-                        chem_form: {
-                            type: String,
-                        },
-                        quantity: [
-                            {
-                                type: Array,
-                                value: {
-                                    type: String,
-                                },
-                            },
-                        ],
-                        unit: {
-                            type: String,
-                        },
-                        observation: {
-                            type: String,
-                        },
                     },
                 ],
             },
