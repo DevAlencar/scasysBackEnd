@@ -3,10 +3,6 @@ const User = require("../models/UserData");
 const FtData = require("../models/FtData");
 
 module.exports = {
-    async test(req, res) {
-        return res.status(200).json({ msg: "deu certo" });
-    },
-
     //Create new experiment
     async new_procedure(req, res) {
         const { name, calc } = req.body;
