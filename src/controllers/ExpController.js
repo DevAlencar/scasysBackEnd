@@ -72,7 +72,7 @@ module.exports = {
             for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
                 for (let j = 0; j < inventory_stage[i].etapa[l].elements.length; j++) {
                     //verificando e guardando os indices dos elementos que sao degradáveis
-                    if (inventory_stage[i].etapa[l].elements[j].isDegradable.verification === true) {
+                    if (inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
                         indicesElemDeg.push(j);
                         indicesInvStDeg.push(i);
                         indicesEtapa.push(l);
@@ -540,7 +540,7 @@ module.exports = {
                         if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited === true) {
                             mtadSum = mtadSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.verification === true) {
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
                             mtrWithFt +=
                                 exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value *
                                 exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft;
