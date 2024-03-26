@@ -50,6 +50,8 @@ module.exports = {
     async login(req, res) {
         const { email, password } = req.body;
 
+        console.log(email, password);
+
         //validations
 
         //verificando existencia dos dados
@@ -72,9 +74,12 @@ module.exports = {
             return res.status(422).json({ msg: "Senha inválida" });
         }
 
+        console.log("password check: ", userPasswordCheck);
+
         //login do usuario com token
         try {
             const secret = process.env.SECRET;
+
             const token = jwt.sign(
                 {
                     id: user._id,

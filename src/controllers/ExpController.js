@@ -5,7 +5,7 @@ const FtData = require("../models/FtData");
 module.exports = {
     //Create new experiment
     async new_procedure(req, res) {
-        const { name, calc } = req.body;
+        let { name, calc } = req.body;
 
         //User  search
         const id = req.params.id;
@@ -58,20 +58,24 @@ module.exports = {
         let indicesInvStDeg = [];
         let indicesEtapa = [];
 
+        console.log("teste");
+        console.log(inventory_stage);
+
         //validations
         for (let i = 0; i < inventory_stage.length; i++) {
             if (!inventory_stage[i].stage) {
                 return res.status(422).json({ msg: "É necessário um estágio" });
             }
+            console.log("entreiiii");
             if (!inventory_stage[i].name) {
                 return res.status(422).json({ msg: "É necessário um nome" });
             }
-            if (!inventory_stage[i].num_of_reps) {
-                return res.status(422).json({ msg: "É necessário um numero de repetições" });
-            }
+            console.log("oieeee");
             for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
+                console.log("opa");
                 for (let j = 0; j < inventory_stage[i].etapa[l].elements.length; j++) {
                     //verificando e guardando os indices dos elementos que sao degradáveis
+                    console.log("oie", inventory_stage[i].etapa[l].elements[j].isDegradable.verification);
                     if (inventory_stage[i].etapa[l].elements[j].isDegradable.verification === true) {
                         indicesElemDeg.push(j);
                         indicesInvStDeg.push(i);
@@ -96,6 +100,8 @@ module.exports = {
                     }
                 }
             }
+
+            return res.status(200).json({ msg: "Estágio de inventário adicionado com sucesso" });
         }
 
         //find experiment and update
