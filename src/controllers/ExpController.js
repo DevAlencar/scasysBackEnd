@@ -63,13 +63,13 @@ module.exports = {
             if (!inventory_stage[i].stage) {
                 return res.status(422).json({ msg: "É necessário um estágio" });
             }
-            if (!inventory_stage[i].name) {
-                return res.status(422).json({ msg: "É necessário um nome" });
-            }
-            if (!inventory_stage[i].num_of_reps) {
-                return res.status(422).json({ msg: "É necessário um numero de repetições" });
-            }
             for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
+                if (!inventory_stage[i].etapa[l].name) {
+                    return res.status(422).json({ msg: "É necessário um nome" });
+                }
+                if (!inventory_stage[i].etapa[l].num_of_reps) {
+                    return res.status(422).json({ msg: "É necessário um numero de repetições" });
+                }
                 for (let j = 0; j < inventory_stage[i].etapa[l].elements.length; j++) {
                     //verificando e guardando os indices dos elementos que sao degradáveis
                     if (inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
@@ -532,13 +532,13 @@ module.exports = {
                         //criação de somatórios
                         totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         if (exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
-                            mmrSum = mmrSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mmrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true) {
-                            mtdrSum = mtdrSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mtdrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited === true) {
-                            mtadSum = mtadSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mtadSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
                             mtrWithFt +=
