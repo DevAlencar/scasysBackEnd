@@ -63,45 +63,56 @@ module.exports = {
 
         //validations
         for (let i = 0; i < inventory_stage.length; i++) {
-            if (!inventory_stage[i].stage) {
+            //falar p arthur essa linha
+            if (!inventory_stage[i].name) {
                 return res.status(422).json({ msg: "É necessário um estágio" });
             }
-            console.log("entreiiii");
-            if (!inventory_stage[i].name) {
-                return res.status(422).json({ msg: "É necessário um nome" });
-            }
-            console.log("oieeee");
+            console.log("passei aqui");
             for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
-                console.log("opa");
+                console.log("passei aqui tbm");
+                if (!inventory_stage[i].etapa[l].name) {
+                    return res.status(422).json({ msg: "É necessário um nome" });
+                }
+
+                if (!inventory_stage[i].etapa[l].num_of_reps) {
+                    return res.status(422).json({ msg: "É necessário um numero de repetições" });
+                }
+
                 for (let j = 0; j < inventory_stage[i].etapa[l].elements.length; j++) {
                     //verificando e guardando os indices dos elementos que sao degradáveis
-                    console.log("oie", inventory_stage[i].etapa[l].elements[j].isDegradable.verification);
-                    if (inventory_stage[i].etapa[l].elements[j].isDegradable.verification === true) {
+                    if (inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
                         indicesElemDeg.push(j);
                         indicesInvStDeg.push(i);
                         indicesEtapa.push(l);
                     }
+
                     if (!inventory_stage[i].etapa[l].elements[j].especifity) {
                         return res.status(422).json({ msg: "É necessário uma especificidade" });
                     }
+
                     if (!inventory_stage[i].etapa[l].elements[j].item) {
                         return res.status(422).json({ msg: "É necessário um item" });
                     }
+
                     if (!inventory_stage[i].etapa[l].elements[j].chem_form) {
                         return res.status(422).json({ msg: "É necessário uma formula quimica" });
                     }
+                    console.log("setaaaaoooo");
+
                     for (let k = 0; k < inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
                         if (!inventory_stage[i].etapa[l].elements[j].quantity[k].value) {
                             return res.status(422).json({ msg: "É necessário valores" });
                         }
                     }
+                    console.log("setaaaa");
+
                     if (!inventory_stage[i].etapa[l].elements[j].unit) {
                         return res.status(422).json({ msg: "É necessário uma unidade" });
                     }
+                    console.log("seta");
                 }
+                console.log("oie");
             }
-
-            return res.status(200).json({ msg: "Estágio de inventário adicionado com sucesso" });
         }
 
         //find experiment and update
@@ -111,6 +122,8 @@ module.exports = {
                 inventory_stage,
             }
         );
+
+        console.log("encontrei o experimento");
 
         if (!exp) {
             return res.status(404).json({ msg: "Experimento não encontrado" });
@@ -538,15 +551,15 @@ module.exports = {
                         //criação de somatórios
                         totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         if (exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
-                            mmrSum = mmrSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mmrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true) {
-                            mtdrSum = mtdrSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mtdrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited === true) {
-                            mtadSum = mtadSum + exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mtadSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.verification === true) {
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
                             mtrWithFt +=
                                 exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value *
                                 exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft;

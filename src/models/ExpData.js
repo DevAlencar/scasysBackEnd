@@ -43,9 +43,6 @@ const ExpDataSchema = new mongoose.Schema(
                                 },
                                 isDegradable: [
                                     {
-                                        verification: {
-                                            type: Boolean,
-                                        },
                                         ft: {
                                             type: Number,
                                         },
