@@ -58,9 +58,6 @@ module.exports = {
         let indicesInvStDeg = [];
         let indicesEtapa = [];
 
-        console.log("teste");
-        console.log(inventory_stage);
-
         //validations
         for (let i = 0; i < inventory_stage.length; i++) {
             //falar p arthur essa linha
@@ -69,7 +66,6 @@ module.exports = {
             }
             console.log("passei aqui");
             for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
-                console.log("passei aqui tbm");
                 if (!inventory_stage[i].etapa[l].name) {
                     return res.status(422).json({ msg: "É necessário um nome" });
                 }
@@ -97,21 +93,17 @@ module.exports = {
                     if (!inventory_stage[i].etapa[l].elements[j].chem_form) {
                         return res.status(422).json({ msg: "É necessário uma formula quimica" });
                     }
-                    console.log("setaaaaoooo");
 
                     for (let k = 0; k < inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
                         if (!inventory_stage[i].etapa[l].elements[j].quantity[k].value) {
                             return res.status(422).json({ msg: "É necessário valores" });
                         }
                     }
-                    console.log("setaaaa");
 
                     if (!inventory_stage[i].etapa[l].elements[j].unit) {
                         return res.status(422).json({ msg: "É necessário uma unidade" });
                     }
-                    console.log("seta");
                 }
-                console.log("oie");
             }
         }
 
@@ -122,8 +114,6 @@ module.exports = {
                 inventory_stage,
             }
         );
-
-        console.log("encontrei o experimento");
 
         if (!exp) {
             return res.status(404).json({ msg: "Experimento não encontrado" });
@@ -548,8 +538,6 @@ module.exports = {
         let mtrWithFt = 0;
         let totalMass = 0;
 
-        console.log("exp: ", exp);
-
         for (let i = 0; i < exp.inventory_stage.length; i++) {
             for (let l = 0; l < exp.inventory_stage[i].etapa.length; l++) {
                 for (let j = 0; j < exp.inventory_stage[i].etapa[l].elements.length; j++) {
@@ -566,7 +554,6 @@ module.exports = {
                             mtadSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
-                            console.log("teste: ", exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].ft);
                             mtrWithFt +=
                                 exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value *
                                 exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].ft;
