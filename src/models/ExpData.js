@@ -23,7 +23,6 @@ const ExpDataSchema = new mongoose.Schema(
                 },
                 etapa: [
                     {
-                        type: Array,
                         name: {
                             type: String,
                         },
@@ -59,7 +58,6 @@ const ExpDataSchema = new mongoose.Schema(
                                 },
                                 quantity: [
                                     {
-                                        type: Array,
                                         value: {
                                             type: Number,
                                         },

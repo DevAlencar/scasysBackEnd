@@ -542,10 +542,16 @@ module.exports = {
     async get_results(req, res) {
         const id = req.params.id;
         const exp = await Exp.findById({ _id: id });
-        let { mmrSum, mtdrSum, mtadSum, mtrWithFt, totalMass } = 0;
+        let mmrSum = 0;
+        let mtdrSum = 0;
+        let mtadSum = 0;
+        let mtrWithFt = 0;
+        let totalMass = 0;
+
+        console.log("exp: ", exp);
 
         for (let i = 0; i < exp.inventory_stage.length; i++) {
-            for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
+            for (let l = 0; l < exp.inventory_stage[i].etapa.length; l++) {
                 for (let j = 0; j < exp.inventory_stage[i].etapa[l].elements.length; j++) {
                     for (let k = 0; k < exp.inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
                         //criação de somatórios
@@ -560,17 +566,36 @@ module.exports = {
                             mtadSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
+                            console.log("teste: ", exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].ft);
                             mtrWithFt +=
                                 exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value *
-                                exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft;
+                                exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].ft;
                         }
                     }
                 }
             }
         }
 
-        let ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
-        ppwg_result = 1 - ppwg_result;
+        //console em todas as variaveis
+        console.log(
+            "mmrSum: ",
+            mmrSum,
+            "mtdrSum: ",
+            mtdrSum,
+            "mtadSum: ",
+            mtadSum,
+            "mtrWithFt: ",
+            mtrWithFt,
+            "totalMass: ",
+            totalMass
+        );
+
+        let ppwg_result = 0;
+
+        if (totalMass !== 0) {
+            ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
+            ppwg_result = 1 - ppwg_result;
+        }
 
         await exp.updateOne({
             ppwg_result,
