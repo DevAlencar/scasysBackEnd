@@ -76,7 +76,7 @@ module.exports = {
 
                 for (let j = 0; j < inventory_stage[i].etapa[l].elements.length; j++) {
                     //verificando e guardando os indices dos elementos que sao degradáveis
-                    if (inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
+                    if (inventory_stage[i].etapa[l].elements[j].isDegradable !== undefined) {
                         indicesElemDeg.push(j);
                         indicesInvStDeg.push(i);
                         indicesEtapa.push(l);
