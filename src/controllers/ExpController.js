@@ -543,7 +543,9 @@ module.exports = {
                 for (let j = 0; j < exp.inventory_stage[i].etapa[l].elements.length; j++) {
                     for (let k = 0; k < exp.inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
                         //criação de somatórios
-                        totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        if (exp.inventory_stage[i].name == "final") {
+                            totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        }
                         if (exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
                             mmrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
@@ -552,11 +554,6 @@ module.exports = {
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited === true) {
                             mtadSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
-                        }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
-                            mtrWithFt +=
-                                exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value *
-                                exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].ft;
                         }
                     }
                 }
@@ -581,8 +578,11 @@ module.exports = {
 
         if (totalMass !== 0) {
             ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
+            console.log("ppwg_result 1: ", ppwg_result);
             ppwg_result = 1 - ppwg_result;
         }
+
+        console.log("ppwg_result: ", ppwg_result);
 
         await exp.updateOne({
             ppwg_result,
