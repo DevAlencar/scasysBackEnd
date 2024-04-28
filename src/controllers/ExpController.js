@@ -5,7 +5,7 @@ const FtData = require("../models/FtData");
 module.exports = {
     //Create new experiment
     async new_procedure(req, res) {
-        const { name, calc } = req.body;
+        let { name, calc } = req.body;
 
         //User  search
         const id = req.params.id;
@@ -60,37 +60,46 @@ module.exports = {
 
         //validations
         for (let i = 0; i < inventory_stage.length; i++) {
-            if (!inventory_stage[i].stage) {
+            //falar p arthur essa linha
+            if (!inventory_stage[i].name) {
                 return res.status(422).json({ msg: "É necessário um estágio" });
             }
+            console.log("passei aqui");
             for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
                 if (!inventory_stage[i].etapa[l].name) {
                     return res.status(422).json({ msg: "É necessário um nome" });
                 }
+
                 if (!inventory_stage[i].etapa[l].num_of_reps) {
                     return res.status(422).json({ msg: "É necessário um numero de repetições" });
                 }
+
                 for (let j = 0; j < inventory_stage[i].etapa[l].elements.length; j++) {
                     //verificando e guardando os indices dos elementos que sao degradáveis
-                    if (inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
+                    if (inventory_stage[i].etapa[l].elements[j].isDegradable !== undefined) {
                         indicesElemDeg.push(j);
                         indicesInvStDeg.push(i);
                         indicesEtapa.push(l);
                     }
+
                     if (!inventory_stage[i].etapa[l].elements[j].especifity) {
                         return res.status(422).json({ msg: "É necessário uma especificidade" });
                     }
+
                     if (!inventory_stage[i].etapa[l].elements[j].item) {
                         return res.status(422).json({ msg: "É necessário um item" });
                     }
+
                     if (!inventory_stage[i].etapa[l].elements[j].chem_form) {
                         return res.status(422).json({ msg: "É necessário uma formula quimica" });
                     }
+
                     for (let k = 0; k < inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
                         if (!inventory_stage[i].etapa[l].elements[j].quantity[k].value) {
                             return res.status(422).json({ msg: "É necessário valores" });
                         }
                     }
+
                     if (!inventory_stage[i].etapa[l].elements[j].unit) {
                         return res.status(422).json({ msg: "É necessário uma unidade" });
                     }
@@ -523,14 +532,20 @@ module.exports = {
     async get_results(req, res) {
         const id = req.params.id;
         const exp = await Exp.findById({ _id: id });
-        let { mmrSum, mtdrSum, mtadSum, mtrWithFt, totalMass } = 0;
+        let mmrSum = 0;
+        let mtdrSum = 0;
+        let mtadSum = 0;
+        let mtrWithFt = 0;
+        let totalMass = 0;
 
         for (let i = 0; i < exp.inventory_stage.length; i++) {
-            for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
+            for (let l = 0; l < exp.inventory_stage[i].etapa.length; l++) {
                 for (let j = 0; j < exp.inventory_stage[i].etapa[l].elements.length; j++) {
                     for (let k = 0; k < exp.inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
                         //criação de somatórios
-                        totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        if (exp.inventory_stage[i].name == "final") {
+                            totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        }
                         if (exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
                             mmrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
@@ -540,18 +555,34 @@ module.exports = {
                         if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited === true) {
                             mtadSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft !== null) {
-                            mtrWithFt +=
-                                exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value *
-                                exp.inventory_stage[i].etapa[l].elements[j].isDegradable.ft;
-                        }
                     }
                 }
             }
         }
 
-        let ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
-        ppwg_result = 1 - ppwg_result;
+        //console em todas as variaveis
+        console.log(
+            "mmrSum: ",
+            mmrSum,
+            "mtdrSum: ",
+            mtdrSum,
+            "mtadSum: ",
+            mtadSum,
+            "mtrWithFt: ",
+            mtrWithFt,
+            "totalMass: ",
+            totalMass
+        );
+
+        let ppwg_result = 0;
+
+        if (totalMass !== 0) {
+            ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
+            console.log("ppwg_result 1: ", ppwg_result);
+            ppwg_result = 1 - ppwg_result;
+        }
+
+        console.log("ppwg_result: ", ppwg_result);
 
         await exp.updateOne({
             ppwg_result,

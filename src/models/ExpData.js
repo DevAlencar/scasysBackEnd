@@ -18,12 +18,11 @@ const ExpDataSchema = new mongoose.Schema(
         },
         inventory_stage: [
             {
-                stage: {
+                name: {
                     type: String,
                 },
                 etapa: [
                     {
-                        type: Array,
                         name: {
                             type: String,
                         },
@@ -59,7 +58,6 @@ const ExpDataSchema = new mongoose.Schema(
                                 },
                                 quantity: [
                                     {
-                                        type: Array,
                                         value: {
                                             type: Number,
                                         },
