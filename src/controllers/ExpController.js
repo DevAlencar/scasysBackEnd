@@ -65,7 +65,6 @@ module.exports = {
             if (!inventory_stage[i].name) {
                 return res.status(422).json({ msg: "É necessário um estágio" });
             }
-            console.log("passei aqui");
             for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
                 if (!inventory_stage[i].etapa[l].name) {
                     return res.status(422).json({ msg: "É necessário um nome" });
@@ -143,6 +142,29 @@ module.exports = {
         }
     },
 
+    async add_bombona_stage(req, res){
+        const { bombona_stage } = req.body;
+        const id = req.params.id;
+
+        const exp = await Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                bombona_stage,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        try{
+            await exp.save();
+            return res.status(200).json({ msg: "Fase bombona adicionada com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
     async add_etc_stage(req, res){
         const { etc_stage } = req.body;
         const id = req.params.id;
@@ -175,7 +197,7 @@ module.exports = {
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
-    }
+    },
 
     /*async add_ppwg_stage(req, res) {
         const { ppwg_stage, mdtrWithFt, ft_data, totalMass } = req.body;

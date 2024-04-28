@@ -6,7 +6,7 @@ const ExpController = require("../src/controllers/ExpController");
 
 routes.post("/newExp/:id", ExpController.new_procedure);
 routes.post("/invetoryStage/:id", ExpController.add_inventory_stage);
-//routes.post("/ppwgStage/:id", ExpController.add_ppwg_stage);
+routes.post("/bombonastage/:id", ExpController.add_bombona_stage);
 routes.post("/securityStageOne/:id", ExpController.add_security_stage_one);
 routes.post("/cmStage/:id", ExpController.add_cm_stage);
 routes.post("/securityStageTwo/:id", ExpController.add_security_stage_two);

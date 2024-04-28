@@ -79,6 +79,26 @@ const ExpDataSchema = new mongoose.Schema(
                 ],
             },
         ],
+        bombona_stage: [
+            {
+                name : {
+                    type: String,
+                },
+                bombona: [
+                    {
+                        quim_component: {
+                            type: String,
+                        },
+                        mass: {
+                            type: Number,
+                        },
+                    },
+                ],
+                isToxic: {
+                    type: Boolean,
+                },
+            },
+        ],
         etc_stage: [
             {
                 quim_component: {
