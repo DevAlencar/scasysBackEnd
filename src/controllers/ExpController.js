@@ -598,7 +598,7 @@ module.exports = {
         let totalMass = 0;
 
         //calc 2 itens;
-        let qttEleDif = 0;
+        let qttEleDif = exp.etc_stage.length;
 
 
         //início do cálculo 1;
@@ -615,12 +615,19 @@ module.exports = {
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true && exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
                             mrrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            for(let h = 0; h < exp.bombona_stage.length; h++){
+                                if(exp.bombona_stage[h].isToxic === true){
+                                    for(let r = 0; r < exp.bombona_stage[h].bombona.length; r++){
+                                        if(exp.inventory_stage[i].etapa[l].elements[j].item === exp.bombona_stage[h].bombona[r].quim_component){
+                                            mrrSum -= exp.bombona_stage[h].bombona[r].mass;
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        //reduzir valor da massa a depender do que ele colocar junto da bombona
                         if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited.f !== null) {
                             mtadWithF += (exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value * exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited[0].f);
                         }
-                        //reduzir valor da massa a depender do que ele colocar junto da bombona
                         if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.td !== null) {
                             mdtrWithFt += (exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value * (28 / exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].td));
                         }
