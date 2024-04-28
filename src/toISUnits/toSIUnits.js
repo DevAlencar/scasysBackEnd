@@ -1,6 +1,6 @@
 module.exports = {
     conversions(value, unit){
-        if(unit == "kg")
+        if(unit == "kilograma")
             return value;
         else if(unit == "gramas"){
             return value/1000;
@@ -8,10 +8,6 @@ module.exports = {
 
         if(unit == "liters"){
             return value;
-        }else if(unit == "ml" || unit == "ML"){
-            return value/1000;
-        }else if(unit == "atm" || unit == "Atm"){
-            return value * 101325;
         }
 
         if(unit == "pa"){
@@ -27,6 +23,15 @@ module.exports = {
         }else if(unit == "°C"){
             return value + 273.15;
         }
+
+        if(unit == "hours"){
+            return value;
+        }else if(unit == "minutes"){
+            return value/60;
+        } else if(unit == "seconds"){
+            return value/3600; 
+        }
+
     },
 
 
