@@ -37,12 +37,16 @@ const ExpDataSchema = new mongoose.Schema(
                                 isRecyclable: {
                                     type: Boolean,
                                 },
-                                isBioDeposited: {
-                                    type: Boolean,
-                                },
+                                isBioDeposited: [
+                                    {
+                                        f: {
+                                            type: Number,
+                                        },
+                                    },
+                                ],
                                 isDegradable: [
                                     {
-                                        ft: {
+                                        td: {
                                             type: Number,
                                         },
                                         src: {
@@ -75,22 +79,12 @@ const ExpDataSchema = new mongoose.Schema(
                 ],
             },
         ],
-        //todo:verificar se é necessário guardar esses valores de ppwg
-        ppwg_stage: [
+        etc_stage: [
             {
-                mtdr: {
-                    type: Number,
+                quim_component: {
+                    type: String,
                 },
-                mrr: {
-                    type: Number,
-                },
-                mtad: {
-                    type: Number,
-                },
-                mtr: {
-                    type: Number,
-                },
-                ft: {
+                ee: {
                     type: Number,
                 },
                 src: {

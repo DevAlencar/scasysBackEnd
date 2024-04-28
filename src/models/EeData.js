@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const FtDataSchema = new mongoose.Schema(
+const EeDataSchema = new mongoose.Schema(
     {
         exp_id: {
             type: String,
@@ -8,7 +8,7 @@ const FtDataSchema = new mongoose.Schema(
         quim_component: {
             type: String,
         },
-        ft: {
+        ee: {
             type: String,
         },
         src: {
@@ -18,4 +18,6 @@ const FtDataSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("ftStorage", FtDataSchema);
+module.exports = mongoose.model("eeStorage", EeDataSchema);
+
+// schema responsável por organizar o dado "TD" separadamente.

@@ -1,6 +1,7 @@
 const Exp = require("../models/ExpData");
 const User = require("../models/UserData");
-const FtData = require("../models/FtData");
+const TdData = require("../models/TdData");
+const EeData = require("../models/EeData");
 
 module.exports = {
     //Create new experiment
@@ -121,19 +122,19 @@ module.exports = {
 
         //save
         try {
-            //create Ft Data
+            //create TD Data
             for (let i = 0; i < indicesInvStDeg.length; i++) {
-                let ftSave = new FtData({
+                let tdSave = new TdData({
                     exp_id: id,
                     quim_component:
                         inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
                             .chem_form,
-                    ft: inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
-                        .isDegradable.ft,
+                    td: inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
+                        .isDegradable[0].td,
                     src: inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
-                        .isDegradable.src,
+                        .isDegradable[0].src,
                 });
-                await ftSave.save();
+                await tdSave.save();
             }
             await exp.save();
             return res.status(200).json({ msg: "Fase de invetário adicionado com sucesso" });
@@ -142,8 +143,42 @@ module.exports = {
         }
     },
 
+    async add_etc_stage(req, res){
+        const { etc_stage } = req.body;
+        const id = req.params.id;
+
+        const exp = await Exp.findByIdAndUpdate(
+            { _id: id },
+            {
+                etc_stage,
+            }
+        );
+
+        if (!exp) {
+            return res.status(404).json({ msg: "Experimento não encontrado" });
+        }
+
+        //save
+        try {
+            //create ee Data
+            for (let i = 0; i < etc_stage.length; i++) {
+                let eeSave = new EeData({
+                    exp_id: id,
+                    quim_component : etc_stage[i].quim_component,
+                    ee : etc_stage[i].ee,
+                    src : etc_stage[i].src,
+                });
+                await eeSave.save();
+            }
+            await exp.save();
+            return res.status(200).json({ msg: "Fase etc adicionada com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    }
+
     /*async add_ppwg_stage(req, res) {
-        const { ppwg_stage, mtrWithFt, ft_data, totalMass } = req.body;
+        const { ppwg_stage, mdtrWithFt, ft_data, totalMass } = req.body;
         const id = req.params.id;
 
         //todo: verificar se é necessário salvar os dados dos somatorios
@@ -173,7 +208,7 @@ module.exports = {
         }
 
         let ppwg_result =
-            (ppwg_stage.mtr - ppwg_stage.mrr - ppwg_stage.mtad - mtrWithFt) /
+            (ppwg_stage.mtr - ppwg_stage.mrr - ppwg_stage.mtad - mdtrWithFt) /
             totalMass;
         ppwg_result = 1 - ppwg_result;
 
@@ -532,12 +567,19 @@ module.exports = {
     async get_results(req, res) {
         const id = req.params.id;
         const exp = await Exp.findById({ _id: id });
-        let mmrSum = 0;
-        let mtdrSum = 0;
-        let mtadSum = 0;
-        let mtrWithFt = 0;
+
+        //calc 1 itens;
+        let mtrSum = 0;
+        let mrrSum = 0;
+        let mtadWithF = 0;
+        let mdtrWithFt = 0;
         let totalMass = 0;
 
+        //calc 2 itens;
+        let qttEleDif = 0;
+
+
+        //início do cálculo 1;
         for (let i = 0; i < exp.inventory_stage.length; i++) {
             for (let l = 0; l < exp.inventory_stage[i].etapa.length; l++) {
                 for (let j = 0; j < exp.inventory_stage[i].etapa[l].elements.length; j++) {
@@ -547,13 +589,18 @@ module.exports = {
                             totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
-                            mmrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mtrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true) {
-                            mtdrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true && exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
+                            mrrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited === true) {
-                            mtadSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        //reduzir valor da massa a depender do que ele colocar junto da bombona
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited.f !== null) {
+                            mtadWithF += (exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value * exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited[0].f);
+                        }
+                        //reduzir valor da massa a depender do que ele colocar junto da bombona
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.td !== null) {
+                            mdtrWithFt += (exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value * (28 / exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].td));
                         }
                     }
                 }
@@ -562,14 +609,14 @@ module.exports = {
 
         //console em todas as variaveis
         console.log(
-            "mmrSum: ",
-            mmrSum,
-            "mtdrSum: ",
-            mtdrSum,
-            "mtadSum: ",
-            mtadSum,
-            "mtrWithFt: ",
-            mtrWithFt,
+            "mtrSum: ",
+            mtrSum,
+            "mrrSum: ",
+            mrrSum,
+            "mtadWithF: ",
+            mtadWithF,
+            "mdtrWithFt: ",
+            mdtrWithFt,
             "totalMass: ",
             totalMass
         );
@@ -577,12 +624,16 @@ module.exports = {
         let ppwg_result = 0;
 
         if (totalMass !== 0) {
-            ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
+            ppwg_result = (mtrSum - mrrSum - mtadWithF - mdtrWithFt) / totalMass;
             console.log("ppwg_result 1: ", ppwg_result);
             ppwg_result = 1 - ppwg_result;
         }
 
         console.log("ppwg_result: ", ppwg_result);
+        //término do cálculo 1;
+
+        //início do cálculo 2;
+
 
         await exp.updateOne({
             ppwg_result,
