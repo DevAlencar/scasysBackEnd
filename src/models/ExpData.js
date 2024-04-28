@@ -37,12 +37,16 @@ const ExpDataSchema = new mongoose.Schema(
                                 isRecyclable: {
                                     type: Boolean,
                                 },
-                                isBioDeposited: {
-                                    type: Boolean,
-                                },
+                                isBioDeposited: [
+                                    {
+                                        f: {
+                                            type: Number,
+                                        },
+                                    },
+                                ],
                                 isDegradable: [
                                     {
-                                        ft: {
+                                        td: {
                                             type: Number,
                                         },
                                         src: {

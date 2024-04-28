@@ -1,6 +1,6 @@
 const Exp = require("../models/ExpData");
 const User = require("../models/UserData");
-const FtData = require("../models/FtData");
+const TdData = require("../models/TdData");
 
 module.exports = {
     //Create new experiment
@@ -121,19 +121,19 @@ module.exports = {
 
         //save
         try {
-            //create Ft Data
+            //create TD Data
             for (let i = 0; i < indicesInvStDeg.length; i++) {
-                let ftSave = new FtData({
+                let tdSave = new TdData({
                     exp_id: id,
                     quim_component:
                         inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
                             .chem_form,
-                    ft: inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
-                        .isDegradable.ft,
+                    td: inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
+                        .isDegradable.td,
                     src: inventory_stage[indicesInvStDeg[i]].etapa[indicesEtapa[i]].elements[indicesElemDeg[i]]
                         .isDegradable.src,
                 });
-                await ftSave.save();
+                await tdSave.save();
             }
             await exp.save();
             return res.status(200).json({ msg: "Fase de invetário adicionado com sucesso" });
@@ -143,7 +143,7 @@ module.exports = {
     },
 
     /*async add_ppwg_stage(req, res) {
-        const { ppwg_stage, mtrWithFt, ft_data, totalMass } = req.body;
+        const { ppwg_stage, mdtrWithFt, ft_data, totalMass } = req.body;
         const id = req.params.id;
 
         //todo: verificar se é necessário salvar os dados dos somatorios
@@ -173,7 +173,7 @@ module.exports = {
         }
 
         let ppwg_result =
-            (ppwg_stage.mtr - ppwg_stage.mrr - ppwg_stage.mtad - mtrWithFt) /
+            (ppwg_stage.mtr - ppwg_stage.mrr - ppwg_stage.mtad - mdtrWithFt) /
             totalMass;
         ppwg_result = 1 - ppwg_result;
 
@@ -532,10 +532,10 @@ module.exports = {
     async get_results(req, res) {
         const id = req.params.id;
         const exp = await Exp.findById({ _id: id });
-        let mmrSum = 0;
-        let mtdrSum = 0;
-        let mtadSum = 0;
-        let mtrWithFt = 0;
+        let mtrSum = 0;
+        let mrrSum = 0;
+        let mtadWithF = 0;
+        let mdtrWithFt = 0;
         let totalMass = 0;
 
         for (let i = 0; i < exp.inventory_stage.length; i++) {
@@ -547,13 +547,16 @@ module.exports = {
                             totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
-                            mmrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mtrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true) {
-                            mtdrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true && exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
+                            mrrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
                         }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited === true) {
-                            mtadSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited.f !== null) {
+                            mtadWithF += (exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value * exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited.f);
+                        }
+                        if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.td !== null) {
+                            mdtrWithFt += (exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value * (28 / exp.inventory_stage[i].etapa[l].elements[j].isDegradable.td));
                         }
                     }
                 }
@@ -562,14 +565,14 @@ module.exports = {
 
         //console em todas as variaveis
         console.log(
-            "mmrSum: ",
-            mmrSum,
-            "mtdrSum: ",
-            mtdrSum,
-            "mtadSum: ",
-            mtadSum,
-            "mtrWithFt: ",
-            mtrWithFt,
+            "mtrSum: ",
+            mtrSum,
+            "mrrSum: ",
+            mrrSum,
+            "mtadWithF: ",
+            mtadWithF,
+            "mdtrWithFt: ",
+            mdtrWithFt,
             "totalMass: ",
             totalMass
         );
@@ -577,7 +580,7 @@ module.exports = {
         let ppwg_result = 0;
 
         if (totalMass !== 0) {
-            ppwg_result = (mmrSum - mtdrSum - mtadSum - mtrWithFt) / totalMass;
+            ppwg_result = (mtrSum - mrrSum - mtadWithF - mdtrWithFt) / totalMass;
             console.log("ppwg_result 1: ", ppwg_result);
             ppwg_result = 1 - ppwg_result;
         }
