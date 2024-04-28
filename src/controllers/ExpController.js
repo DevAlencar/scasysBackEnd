@@ -599,6 +599,9 @@ module.exports = {
 
         //calc 2 itens;
         let qttEleDif = exp.etc_stage.length;
+        let etcResult = 0;
+        let cre = 0;
+        let produtorioEeCre = 1;
 
 
         //início do cálculo 1;
@@ -662,6 +665,12 @@ module.exports = {
         //término do cálculo 1;
 
         //início do cálculo 2;
+
+        for(let i = 0; i<qttEleDif; i++){
+            produtorioEeCre = produtorioEeCre * (exp.etc_stage[0].ee/cre);//TODO: verificar onde vai estar esse Cre
+        }
+
+        etcResult = (1/qttEleDif)*Math.pow(produtorioEeCre,1/qttEleDif);
 
 
         await exp.updateOne({
