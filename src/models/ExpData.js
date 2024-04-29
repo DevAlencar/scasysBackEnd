@@ -92,6 +92,9 @@ const ExpDataSchema = new mongoose.Schema(
                         mass: {
                             type: Number,
                         },
+                        unit: {
+                            type: String,
+                        },
                     },
                 ],
                 isToxic: {
