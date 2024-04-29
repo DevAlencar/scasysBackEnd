@@ -672,6 +672,8 @@ module.exports = {
 
         etcResult = (1/qttEleDif)*Math.pow(produtorioEeCre,1/qttEleDif);
 
+        //Fim cálculo 2;
+
 
         await exp.updateOne({
             ppwg_result,
