@@ -621,6 +621,9 @@ const ExpDataSchema = new mongoose.Schema(
         ppwg_result: {
             type: Number,
         },
+        etc_result: {
+            type: Number,
+        },
     },
     { timestamps: true }
 );

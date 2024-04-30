@@ -779,7 +779,7 @@ module.exports = {
 
         try {
             await exp.save();
-            return res.status(200).json({ msg: "Resultados calculados com sucesso" });
+            return res.status(200).json({ msg: "Cálculo 1 realizado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
@@ -791,25 +791,37 @@ module.exports = {
 
         //calc 2 itens;
         let qttEleDif = exp.etc_stage.length;
-        let etcResult = 0;
+        let etc_result = 0;
         let produtorioEeCre = 1;
 
         //início do cálculo 2;
-        for (let i = 0; i < qttEleDif; i++) {
-            produtorioEeCre = produtorioEeCre * (exp.etc_stage[i].ee / cre[i]);
+        for (let f = 0; f < qttEleDif; f++) {
+            let cre = 0;
+            for (let i = 0; i < exp.inventory_stage.length; i++) {
+                for (let l = 0; l < exp.inventory_stage[i].etapa.length; l++) {
+                    for (let j = 0; j < exp.inventory_stage[i].etapa[l].elements.length; j++) {
+                        if (exp.etc_stage.quim_component === exp.inventory_stage[i].etapa[l].elements[j].item) {
+                            if (cre < exp.inventory_stage[i].etapa[l].elements[j].concentrationInSet) {
+                                cre = exp.inventory_stage[i].etapa[l].elements[j].concentrationInSet;
+                            }
+                        }
+                    }
+                }
+            }
+            produtorioEeCre = produtorioEeCre * (exp.etc_stage[f].ee / cre);
         }
 
-        etcResult = (1 / qttEleDif) * Math.pow(produtorioEeCre, 1 / qttEleDif);
+        etc_result = (1 / qttEleDif) * Math.pow(produtorioEeCre, 1 / qttEleDif);
 
         //Fim cálculo 2;
 
         await exp.updateOne({
-            ppwg_result,
+            etc_result,
         });
 
         try {
             await exp.save();
-            return res.status(200).json({ msg: "Resultados calculados com sucesso" });
+            return res.status(200).json({ msg: "Cálculo 2 realizado com sucesso" });
         } catch (err) {
             return res.status(500).json({ msg: "serverError" });
         }
