@@ -266,57 +266,6 @@ module.exports = {
         }
     },
 
-    async add_security_stage_one(req, res) {
-        const { security_stage_one } = req.body;
-        const id = req.params.id;
-
-        //validations
-        if (!security_stage_one.exposition.quim_comp) {
-            return res.status(422).json({ msg: "É necessário um componente químico" });
-        }
-        if (!security_stage_one.exposition.conc_tox_lim.value) {
-            return res.status(422).json({ msg: "É necessário o valor de limite tóxico" });
-        }
-        if (!security_stage_one.exposition.conc_tox_lim.unit) {
-            return res.status(422).json({ msg: "É necessário uma unidade para limite tóxico" });
-        }
-        if (!security_stage_one.exposition.exp_time.value) {
-            return res.status(422).json({
-                msg: "É necessário o valor para o tempo de exposição",
-            });
-        }
-        if (!security_stage_one.exposition.exp_time.unit) {
-            return res.status(422).json({
-                msg: "É necessário uma unidade para o tempo de exposição",
-            });
-        }
-        if (!security_stage_one.exposition.src) {
-            return res.status(422).json({ msg: "É necessário uma fonte" });
-        }
-
-        //TODO: adicionar métodos de calculo
-
-        //find experiment and update
-        const exp = await Exp.findByIdAndUpdate(
-            { _id: id },
-            {
-                security_stage_one,
-            }
-        );
-
-        if (!exp) {
-            return res.status(404).json({ msg: "Experimento não encontrado" });
-        }
-
-        //save
-        try {
-            exp.save;
-            return res.status(500).json({ msg: "Fase de segurança 1 adicionado com sucesso" });
-        } catch (err) {
-            return res.status(500).json({ msg: "serverError" });
-        }
-    },
-
     async add_cm_stage(req, res) {
         const { cm_stage } = req.body;
         const id = req.params.id;
