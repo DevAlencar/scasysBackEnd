@@ -73,7 +73,7 @@ const ExpDataSchema = new mongoose.Schema(
                                 density: {
                                     type: Number,
                                 },
-                                concentration: {
+                                concentrationInSet: {
                                     type: Number,
                                 },
                                 observation: {
