@@ -18,7 +18,7 @@ const ExpDataSchema = new mongoose.Schema(
         },
         inventory_stage: [
             {
-                name: {
+                stage: {
                     type: String,
                 },
                 etapa: [
@@ -70,6 +70,12 @@ const ExpDataSchema = new mongoose.Schema(
                                 unit: {
                                     type: String,
                                 },
+                                density: {
+                                    type: Number,
+                                },
+                                concentration: {
+                                    type: Number,
+                                },
                                 observation: {
                                     type: String,
                                 },
@@ -81,7 +87,7 @@ const ExpDataSchema = new mongoose.Schema(
         ],
         bombona_stage: [
             {
-                name : {
+                name: {
                     type: String,
                 },
                 bombona: [
@@ -89,7 +95,7 @@ const ExpDataSchema = new mongoose.Schema(
                         quim_component: {
                             type: String,
                         },
-                        mass: {
+                        value: {
                             type: Number,
                         },
                         unit: {

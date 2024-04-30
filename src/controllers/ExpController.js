@@ -3,6 +3,8 @@ const User = require("../models/UserData");
 const TdData = require("../models/TdData");
 const EeData = require("../models/EeData");
 
+const toISUnits = require("../toISUnits/toSIUnits");
+
 module.exports = {
     //Create new experiment
     async new_procedure(req, res) {
@@ -142,7 +144,7 @@ module.exports = {
         }
     },
 
-    async add_bombona_stage(req, res){
+    async add_bombona_stage(req, res) {
         const { bombona_stage } = req.body;
         const id = req.params.id;
 
@@ -157,7 +159,7 @@ module.exports = {
             return res.status(404).json({ msg: "Experimento não encontrado" });
         }
 
-        try{
+        try {
             await exp.save();
             return res.status(200).json({ msg: "Fase bombona adicionada com sucesso" });
         } catch (err) {
@@ -165,7 +167,7 @@ module.exports = {
         }
     },
 
-    async add_etc_stage(req, res){
+    async add_etc_stage(req, res) {
         const { etc_stage } = req.body;
         const id = req.params.id;
 
@@ -186,9 +188,9 @@ module.exports = {
             for (let i = 0; i < etc_stage.length; i++) {
                 let eeSave = new EeData({
                     exp_id: id,
-                    quim_component : etc_stage[i].quim_component,
-                    ee : etc_stage[i].ee,
-                    src : etc_stage[i].src,
+                    quim_component: etc_stage[i].quim_component,
+                    ee: etc_stage[i].ee,
+                    src: etc_stage[i].src,
                 });
                 await eeSave.save();
             }
@@ -586,7 +588,7 @@ module.exports = {
         }
     },
 
-    async get_results(req, res) {
+    async get_calc1(req, res) {
         const id = req.params.id;
         const exp = await Exp.findById({ _id: id });
 
@@ -597,42 +599,85 @@ module.exports = {
         let mdtrWithFt = 0;
         let totalMass = 0;
 
-        //calc 2 itens;
-        let qttEleDif = exp.etc_stage.length;
-        let etcResult = 0;
-        let cre = 0;
-        let produtorioEeCre = 1;
-
-
         //início do cálculo 1;
         for (let i = 0; i < exp.inventory_stage.length; i++) {
             for (let l = 0; l < exp.inventory_stage[i].etapa.length; l++) {
                 for (let j = 0; j < exp.inventory_stage[i].etapa[l].elements.length; j++) {
                     for (let k = 0; k < exp.inventory_stage[i].etapa[l].elements[j].quantity.length; k++) {
+                        //verificacao de unidade de medida
+                        let massaEmGramas = 0;
+                        if (exp.inventory_stage[i].etapa[l].elements[j].unit !== "gramas") {
+                            if (exp.inventory_stage[i].etapa[l].elements[j].density === null) {
+                                //verificando se tem ou nao densidade, se nao tiver, se trata de um valor em massa e segue o fluxo normal, se tiver, é outra conversao;
+                                massaEmGramas = toISUnits.conversions(
+                                    exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value,
+                                    exp.inventory_stage[i].etapa[l].elements[j].unit,
+                                    "gramas"
+                                );
+                            } else {
+                                //precisa de alteracao na funcao chamada para funcionar
+                                massaEmGramas = toISUnits.conversions(
+                                    exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value,
+                                    exp.inventory_stage[i].etapa[l].elements[j].unit,
+                                    "gramas",
+                                    exp.inventory_stage[i].etapa[l].elements[j].density
+                                );
+                            }
+                        } else {
+                            massaEmGramas = exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        }
                         //criação de somatórios
-                        if (exp.inventory_stage[i].name == "final") {
-                            totalMass += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                        if (exp.inventory_stage[i].stage == "final") {
+                            totalMass += massaEmGramas;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
-                            mtrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
+                            mtrSum += massaEmGramas;
                         }
-                        if (exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true && exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo") {
-                            mrrSum += exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value;
-                            for(let h = 0; h < exp.bombona_stage.length; h++){
-                                if(exp.bombona_stage[h].isToxic === true){
-                                    for(let r = 0; r < exp.bombona_stage[h].bombona.length; r++){
-                                        if(exp.inventory_stage[i].etapa[l].elements[j].item === exp.bombona_stage[h].bombona[r].quim_component){
-                                            mrrSum -= exp.bombona_stage[h].bombona[r].mass;
+                        if (
+                            exp.inventory_stage[i].etapa[l].elements[j].isRecyclable === true &&
+                            exp.inventory_stage[i].etapa[l].elements[j].especifity === "Residuo"
+                        ) {
+                            mrrSum += exp.massaEmGramas;
+                            for (let h = 0; h < exp.bombona_stage.length; h++) {
+                                if (exp.bombona_stage[h].isToxic === true) {
+                                    for (let r = 0; r < exp.bombona_stage[h].bombona.length; r++) {
+                                        let massaEmGramasBombona = 0;
+                                        if (
+                                            exp.inventory_stage[i].etapa[l].elements[j].item ===
+                                            exp.bombona_stage[h].bombona[r].quim_component
+                                        ) {
+                                            if (exp.bombona_stage[h].bombona[r].unit !== "gramas") {
+                                                if (exp.inventory_stage[i].etapa[l].elements[j].density === null) {
+                                                    massaEmGramasBombona = toISUnits.conversions(
+                                                        exp.bombona_stage[h].bombona[r].value,
+                                                        exp.bombona_stage[h].bombona[r].unit,
+                                                        "gramas"
+                                                    );
+                                                } else {
+                                                    //precisa de alteracao na funcao chamada para funcionar
+                                                    massaEmGramasBombona = toISUnits.conversions(
+                                                        exp.bombona_stage[h].bombona[r].value,
+                                                        exp.bombona_stage[h].bombona[r].unit,
+                                                        "gramas",
+                                                        exp.inventory_stage[i].etapa[l].elements[j].density
+                                                    );
+                                                }
+                                            } else {
+                                                massaEmGramasBombona = exp.bombona_stage[h].bombona[r].value;
+                                            }
+                                            mrrSum -= massaEmGramasBombona;
                                         }
                                     }
                                 }
                             }
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited.f !== null) {
-                            mtadWithF += (exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value * exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited[0].f);
+                            mtadWithF +=
+                                massaEmGramas * exp.inventory_stage[i].etapa[l].elements[j].isBioDeposited[0].f;
                         }
                         if (exp.inventory_stage[i].etapa[l].elements[j].isDegradable.td !== null) {
-                            mdtrWithFt += (exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value * (28 / exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].td));
+                            mdtrWithFt +=
+                                massaEmGramas * (28 / exp.inventory_stage[i].etapa[l].elements[j].isDegradable[0].td);
                         }
                     }
                 }
@@ -664,16 +709,88 @@ module.exports = {
         console.log("ppwg_result: ", ppwg_result);
         //término do cálculo 1;
 
-        //início do cálculo 2;
+        await exp.updateOne({
+            ppwg_result,
+        });
 
-        for(let i = 0; i<qttEleDif; i++){
-            produtorioEeCre = produtorioEeCre * (exp.etc_stage[0].ee/cre);//TODO: verificar onde vai estar esse Cre
+        try {
+            await exp.save();
+            return res.status(200).json({ msg: "Resultados calculados com sucesso" });
+        } catch (err) {
+            return res.status(500).json({ msg: "serverError" });
+        }
+    },
+
+    async get_calc2(req, res) {
+        const id = req.params.id;
+        const exp = await Exp.findById({ _id: id });
+
+        //calc 2 itens;
+        let qttEleDif = exp.etc_stage.length;
+        let etcResult = 0;
+        let cre = []; //maior concentracao que tiver do elemento referente
+        let produtorioEeCre = 1;
+
+        //fazendo array de cre
+        for (let i = 0; i < qttEleDif; i++) {
+            cre[i] = 0;
+            for (let r = 0; r < exp.inventory_stage.length; r++) {
+                for (let l = 0; l < exp.inventory_stage[r].etapa.length; l++) {
+                    let massaDoConjunto = 0;
+                    let elementoTaAqui = false;
+                    let massaDoElemento = 0;
+                    for (let j = 0; j < exp.inventory_stage[r].etapa[l].elements.length; j++) {
+                        if (exp.etc_stage[i].quim_component === exp.inventory_stage[r].etapa[l].elements[j].item) {
+                            elementoTaAqui = true;
+                        }
+                        for (let k = 0; k < exp.inventory_stage[r].etapa[l].elements[j].quantity.length; k++) {
+                            let massaEmGramas = 0;
+                            if (exp.inventory_stage[r].etapa[l].elements[j].unit !== "gramas") {
+                                if (exp.inventory_stage[r].etapa[l].elements[j].density === null) {
+                                    //verificando se tem ou nao densidade, se nao tiver, se trata de um valor em massa e segue o fluxo normal, se tiver, é outra conversao;
+                                    massaEmGramas = toISUnits.conversions(
+                                        exp.inventory_stage[r].etapa[l].elements[j].quantity[k].value,
+                                        exp.inventory_stage[r].etapa[l].elements[j].unit,
+                                        "gramas"
+                                    );
+                                } else {
+                                    //precisa de alteracao na funcao chamada para funcionar
+                                    massaEmGramas = toISUnits.conversions(
+                                        exp.inventory_stage[r].etapa[l].elements[j].quantity[k].value,
+                                        exp.inventory_stage[r].etapa[l].elements[j].unit,
+                                        "gramas",
+                                        exp.inventory_stage[r].etapa[l].elements[j].density
+                                    );
+                                }
+                            } else {
+                                massaEmGramas = exp.inventory_stage[r].etapa[l].elements[j].quantity[k].value;
+                            }
+                            massaDoConjunto += massaEmGramas;
+                            if (exp.etc_stage[i].quim_component === exp.inventory_stage[r].etapa[l].elements[j].item) {
+                                massaDoElemento += massaEmGramas;
+                            }
+                        }
+                    }
+                    if (elementoTaAqui === true) {
+                        let cre_value = 0;
+
+                        cre_value = massaDoElemento / massaDoConjunto;
+                        if (cre[i] < cre_value) {
+                            cre[i] = cre_value;
+                        }
+                    }
+                }
+            }
         }
 
-        etcResult = (1/qttEleDif)*Math.pow(produtorioEeCre,1/qttEleDif);
+        //início do cálculo 2;
+        for (let i = 0; i < qttEleDif; i++) {
+            produtorioEeCre = produtorioEeCre * (exp.etc_stage[i].ee / cre[i]);
+        }
+
+        etcResult = (1 / qttEleDif) * Math.pow(produtorioEeCre, 1 / qttEleDif);
 
         //Fim cálculo 2;
-
 
         await exp.updateOne({
             ppwg_result,

@@ -19,7 +19,8 @@ routes.post("/radIonStage/:id", ExpController.add_rad_ion_stage);
 routes.post("/resorCosumStage/:id", ExpController.add_resor_cosum_stage);
 routes.post("/holAmbStage/:id", ExpController.add_hol_amb_stage);
 
-routes.get("/showResults/:id", ExpController.get_results);
+routes.get("/showCalc1/:id", ExpController.get_calc1);
+routes.get("/showCalc2/:id", ExpController.get_calc2);
 
 routes.delete(
     "/deleteProcedure/:expId/:userId",
