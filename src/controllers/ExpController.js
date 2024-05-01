@@ -3,7 +3,7 @@ const User = require("../models/UserData");
 const TdData = require("../models/TdData");
 const EeData = require("../models/EeData");
 
-const toISUnits = require("../toISUnits/toSIUnits");
+const conversions = require("../units/conversions");
 
 module.exports = {
     //Create new experiment
@@ -121,14 +121,14 @@ module.exports = {
                         if (inventory_stage[i].etapa[l].elements[j].unit !== "gramas") {
                             if (inventory_stage[i].etapa[l].elements[j].density === null) {
                                 //verificando se tem ou nao densidade, se nao tiver, se trata de um valor em massa e segue o fluxo normal, se tiver, é outra conversao;
-                                massaEmGrama = toISUnits.conversions(
+                                massaEmGrama = conversions(
                                     inventory_stage[i].etapa[l].elements[j].quantity[k].value,
                                     inventory_stage[i].etapa[l].elements[j].unit,
                                     "gramas"
                                 );
                             } else {
                                 //precisa de alteracao na funcao chamada para funcionar
-                                massaEmGrama = toISUnits.conversions(
+                                massaEmGrama = conversions(
                                     inventory_stage[i].etapa[l].elements[j].quantity[k].value,
                                     inventory_stage[i].etapa[l].elements[j].unit,
                                     "gramas",
@@ -149,14 +149,14 @@ module.exports = {
                         if (inventory_stage[i].etapa[l].elements[j].unit !== "gramas") {
                             if (inventory_stage[i].etapa[l].elements[j].density === null) {
                                 //verificando se tem ou nao densidade, se nao tiver, se trata de um valor em massa e segue o fluxo normal, se tiver, é outra conversao;
-                                massaEmGrama = toISUnits.conversions(
+                                massaEmGrama = conversions(
                                     inventory_stage[i].etapa[l].elements[j].quantity[k].value,
                                     inventory_stage[i].etapa[l].elements[j].unit,
                                     "gramas"
                                 );
                             } else {
                                 //precisa de alteracao na funcao chamada para funcionar
-                                massaEmGrama = toISUnits.conversions(
+                                massaEmGrama = conversions(
                                     inventory_stage[i].etapa[l].elements[j].quantity[k].value,
                                     inventory_stage[i].etapa[l].elements[j].unit,
                                     "gramas",
@@ -560,14 +560,14 @@ module.exports = {
                         if (exp.inventory_stage[i].etapa[l].elements[j].unit !== "gramas") {
                             if (exp.inventory_stage[i].etapa[l].elements[j].density === null) {
                                 //verificando se tem ou nao densidade, se nao tiver, se trata de um valor em massa e segue o fluxo normal, se tiver, é outra conversao;
-                                massaEmGrama = toISUnits.conversions(
+                                massaEmGrama = conversions(
                                     exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value,
                                     exp.inventory_stage[i].etapa[l].elements[j].unit,
                                     "gramas"
                                 );
                             } else {
                                 //precisa de alteracao na funcao chamada para funcionar
-                                massaEmGrama = toISUnits.conversions(
+                                massaEmGrama = conversions(
                                     exp.inventory_stage[i].etapa[l].elements[j].quantity[k].value,
                                     exp.inventory_stage[i].etapa[l].elements[j].unit,
                                     "gramas",
@@ -599,14 +599,14 @@ module.exports = {
                                         ) {
                                             if (exp.bombona_stage[h].bombona[r].unit !== "gramas") {
                                                 if (exp.inventory_stage[i].etapa[l].elements[j].density === null) {
-                                                    massaEmGramaBombona = toISUnits.conversions(
+                                                    massaEmGramaBombona = conversions(
                                                         exp.bombona_stage[h].bombona[r].value,
                                                         exp.bombona_stage[h].bombona[r].unit,
                                                         "gramas"
                                                     );
                                                 } else {
                                                     //precisa de alteracao na funcao chamada para funcionar
-                                                    massaEmGramaBombona = toISUnits.conversions(
+                                                    massaEmGramaBombona = conversions(
                                                         exp.bombona_stage[h].bombona[r].value,
                                                         exp.bombona_stage[h].bombona[r].unit,
                                                         "gramas",
