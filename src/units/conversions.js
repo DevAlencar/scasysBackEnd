@@ -12,7 +12,7 @@ function toConvert(value, fromUnit, toUnit, densityOrMolarmass = null){
             return value/1000;
         }
         else if(toUnit == "mililiters"){
-            return value/1000;
+            return value*1000;
         }
 
         //pressure conversion to pa
@@ -36,11 +36,11 @@ function toConvert(value, fromUnit, toUnit, densityOrMolarmass = null){
 
     }else{
         if(toUnit == "gramas"){
-            //density vai tá em g/L
-            if(fromUnit == "liters"){
+            //density vai tá em g/mL
+            if(fromUnit == "mililiters"){
                 return value * densityOrMolarmass;
-            }else if (fromUnit == "mililiters"){
-                return (value * densityOrMolarmass)/1000;
+            }else if (fromUnit == "liters"){
+                return (value * densityOrMolarmass)*1000;
             }
 
             if(fromUnit == "mols"){
