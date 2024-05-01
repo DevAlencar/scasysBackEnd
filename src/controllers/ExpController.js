@@ -64,7 +64,7 @@ module.exports = {
         //validations
         for (let i = 0; i < inventory_stage.length; i++) {
             //falar p arthur essa linha
-            if (!inventory_stage[i].name) {
+            if (!inventory_stage[i].stage) {
                 return res.status(422).json({ msg: "É necessário um estágio" });
             }
             for (let l = 0; l < inventory_stage[i].etapa.length; l++) {
