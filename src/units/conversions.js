@@ -1,8 +1,8 @@
 function toConvert(value, fromUnit, toUnit, densityOrMolarmass = null) {
     if (!densityOrMolarmass) {
-        if (toUnit == "grama") {
+        if (toUnit == "kilograma") {
             return value / 1000;
-        } else if (toUnit == "kilograma") {
+        } else if (toUnit == "grama") {
             return value * 1000;
         }
 
